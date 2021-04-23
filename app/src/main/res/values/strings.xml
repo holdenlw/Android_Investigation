@@ -1,0 +1,47 @@
+<resources>
+    <string name="app_name">My Application</string>
+    <string name="action_settings">Settings</string>
+    <!-- Strings used for fragments for navigation -->
+    <string name="first_fragment_label">First Fragment</string>
+    <string name="second_fragment_label">Second Fragment</string>
+    <string name="next">Next</string>
+    <string name="previous">Previous</string>
+
+    <string name="hello_first_fragment">Hello first fragment</string>
+    <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+    <string name="altitude">Altitude:</string>
+    <string name="lat">Lat:</string>
+    <string name="a_0_00">0.00</string>
+    <string name="lon">lon:</string>
+    <string name="b_0_00">0.00</string>
+    <string name="c_0_00">0.00</string>
+    <string name="accuracy">Accuracy:</string>
+    <string name="d_0_00">0.00</string>
+    <string name="speed">Speed:</string>
+    <string name="e_0_00">0.00</string>
+    <string name="sensor">Sensor:</string>
+    <string name="cell_tower_wifi">Cell Tower + Wifi</string>
+    <string name="updates">Updates:</string>
+    <string name="off">Off</string>
+    <string name="location_updates">Location Updates</string>
+    <string name="only_gps">Only GPS</string>
+    <string name="address">Address:</string>
+    <string name="location_information">Location Information</string>
+    <string name="environmental_sensors">Enviromental Sensors</string>
+    <string name="motion_sensors">Motion Sensors</string>
+    <string name="temp">Temp:</string>
+    <string name="f_0_00">0.00</string>
+    <string name="lighting">Lighting:</string>
+    <string name="g_0_00">0.00</string>
+    <string name="air_pressure">Air Pressure:</string>
+    <string name="h_0_00">0.00</string>
+    <string name="humidity">Humidity:</string>
+    <string name="i_0_00">0.00</string>
+    <string name="proximity_to_other_devices">Proximity to other devices:</string>
+    <string name="j_0_00">0.00</string>
+    <string name="acceleration">Acceleration:</string>
+    <string name="k_0_00">0.00</string>
+    <string name="magnetic_field">Magnetic Field:</string>
+    <string name="l_0_00">0.00</string>
+    <string name="other_sensors">Other Sensors</string>
+</resources>
