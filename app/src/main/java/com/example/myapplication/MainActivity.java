@@ -14,6 +14,7 @@ import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -54,6 +55,13 @@ public class MainActivity extends AppCompatActivity {
 
     // Sensors
     HelperSensorTemp tempSensor;
+    HelperSensorHumidity humiditySensor;
+    HelperSensorPressure pressureSensor;
+    HelperSensorProximity proximitySensor;
+    HelperSensorLight lightSensor;
+    HelperSensorAcceleration accelerationSensor;
+    HelperSensorMagnetic magneticSensor;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -82,18 +90,26 @@ public class MainActivity extends AppCompatActivity {
 
         // sensors
         tempSensor = new HelperSensorTemp();
+        humiditySensor = new HelperSensorHumidity();
+        pressureSensor = new HelperSensorPressure();
+        proximitySensor = new HelperSensorProximity();
+        lightSensor = new HelperSensorLight();
+        accelerationSensor = new HelperSensorAcceleration();
+        magneticSensor = new HelperSensorMagnetic();
 
         // set properties of request
         locationRequest = LocationRequest.create();
 
         // how often default location request occurs
+        // We can keep this simple -- more likely to get errors if running too fast
         locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
 
         // how often request occurs at highest frequency
         locationRequest.setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL);
 
-        // will change later to more accuracy NOTE: studio says I should access via the class, not the instance...
-        locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        // NOTE: studio says I should access via the class, not the instance...
+        // Highest priority setting -- BALANCED recommended
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
 
@@ -105,66 +121,63 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sw_gps.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sw_gps.isChecked()) {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                    tv_sensor.setText("Using GPS");
-                } else {
-                    locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-                    tv_sensor.setText("Using Cell Towers + WiFi");
-                }
+        sw_gps.setOnClickListener(v -> {
+            if (sw_gps.isChecked()) {
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                tv_sensor.setText("Using GPS");
+            } else {
+                locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+                tv_sensor.setText("Using Cell Towers + WiFi");
             }
         });
 
-        sw_locations.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sw_locations.isChecked()) {
-                    startLocationUpdates();
-                } else stopLocationUpdates();
-            }
+        sw_locations.setOnClickListener(v -> {
+            if (sw_locations.isChecked()) {
+                startLocationUpdates();
+            } else stopLocationUpdates();
         });
 
-        sw_sensors.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (sw_sensors.isChecked()) {
-                    updateSensors();
-                } else turnOffSensors();
-            }
+        sw_sensors.setOnClickListener(v -> {
+            if (sw_sensors.isChecked()) {
+                updateSensors();
+            } else turnOffSensors();
         });
 
         updateGPS();
+        updateSensors();
     }
 
     private void updateSensors() {
-        // not working for some reason
-        //tv_temp.setText(tempSensor.getTempValues());
-        tv_temp.setText(tempSensor.getWorking());
+        // use getWorking() for testing
+        tv_temp.setText(tempSensor.getTempValues());
+        tv_humidity.setText(humiditySensor.getRelativeHumidity());
+        tv_pressure.setText(pressureSensor.getPressure());
+        tv_proximity.setText(proximitySensor.getProximity());
+        tv_light.setText(lightSensor.getLight());
+        tv_accelerator.setText(accelerationSensor.getAcceleration());
+        tv_magnetic.setText(magneticSensor.getMagneticField());
 
     }
 
     private void turnOffSensors() {
-        tv_temp.setText("nope");
-        tv_light.setText("nope");
-        tv_pressure.setText("nope");
-        tv_humidity.setText("nope");
-        tv_proximity.setText("nope");
-        tv_accelerator.setText("nope");
-        tv_magnetic.setText("nope");
+        tv_temp.setText("Off");
+        tv_light.setText("Off");
+        tv_pressure.setText("Off");
+        tv_humidity.setText("Off");
+        tv_proximity.setText("Off");
+        tv_accelerator.setText("Off");
+        tv_magnetic.setText("Off");
     }
 
     private void stopLocationUpdates() {
         tv_updates.setText("Location is NOT being tracked");
-        tv_lat.setText("Not being tracked");
-        tv_lon.setText("Not being tracked");
-        tv_accuracy.setText("Not being tracked");
-        tv_address.setText("Not being tracked");
-        tv_speed.setText("Not being tracked");
-        tv_altitude.setText("Not being tracked");
-        tv_sensor.setText("Not being tracked");
+        tv_lat.setText("Off");
+        tv_lon.setText("Off");
+        tv_accuracy.setText("Off");
+        tv_address.setText("Off");
+        tv_speed.setText("Off");
+        tv_altitude.setText("Off");
+        tv_sensor.setText("Off");
 
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
@@ -189,15 +202,13 @@ public class MainActivity extends AppCompatActivity {
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
 
-        switch (requestCode) {
-            case PERMISSION_FINE_LOCATION:
-                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    updateGPS();
-                } else {
-                    Toast.makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
-                    finish();
-                }
-            break;
+        if (requestCode == PERMISSION_FINE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                updateGPS();
+            } else {
+                Toast.makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
+                finish();
+            }
         }
     }
 
@@ -206,13 +217,20 @@ public class MainActivity extends AppCompatActivity {
          fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // This can be replaced with current location and other things
-             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this, new OnSuccessListener<Location>() {
-                @Override
-                public void onSuccess(Location location) {
-                    updateUIValue(location);
-                }
-            });
+
+
+             // ##### MAYBE ADD MORE HERE ##### //
+             // Current location more likely to throw errors and is limited to
+//             fusedLocationProviderClient.getCurrentLocation(priority int and CancellationToken).addOnSuccessListener(this,
+//                     new OnSuccessListener<Location>() {
+//                         @Override
+//                         public void onSuccess(Location location) {
+//                             updateUIValue(location);
+//                         }
+//                     });
+             //location -> updateUIValue(location)); --> replaced
+             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
+                     this::updateUIValue);
          } else {
              if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                  requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);

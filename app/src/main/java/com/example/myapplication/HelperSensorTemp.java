@@ -13,7 +13,7 @@ public class HelperSensorTemp extends Application implements SensorEventListener
     private Sensor tempSensor;
     private float tempValues;
     private SensorManager sensorManager;
-    private boolean working;
+//    private boolean working; makeshift debugging process for sensors
 
     @CallSuper
     public void onCreate() {
@@ -23,11 +23,11 @@ public class HelperSensorTemp extends Application implements SensorEventListener
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_FASTEST);
-        if (tempSensor != null) {
-            working = true;
-        } else {
-            working = false;
-        }
+//        if (tempSensor != null) {
+//            working = true;
+//        } else {
+//            working = false;
+//        }
 
 // Just going to assume there is a sensor
 //        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
@@ -48,16 +48,16 @@ public class HelperSensorTemp extends Application implements SensorEventListener
     }
 
     public String getTempValues() {
-        if (tempSensor==null) {
+        if (tempSensor == null) {
             return "No sensor";
         }
-        return tempValues  + "°C";
-    }
-
-    public String getWorking() {
-        if (working) {
-            return "this is weird";
-        }
-        return "this isn't working";
+        return tempValues + "°C";
     }
 }
+//    public String getWorking() {
+//        if (working) {
+//            return "this is weird";
+//        }
+//        return "this isn't working";
+//    }
+
