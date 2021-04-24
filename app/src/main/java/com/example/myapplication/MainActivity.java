@@ -232,8 +232,8 @@ public class MainActivity extends AppCompatActivity {
 
         // also a speed accuracy sensor to check out
         if (location.hasSpeed()) {
-            tv_altitude.setText(String.valueOf(location.getSpeed()));
-        } else tv_altitude.setText("No Speed Sensor or no speed detected");
+            tv_speed.setText(String.valueOf(location.getSpeed()));
+        } else tv_speed.setText("No Speed Sensor or no speed detected");
 
         Geocoder geocoder = new Geocoder(MainActivity.this);
 
