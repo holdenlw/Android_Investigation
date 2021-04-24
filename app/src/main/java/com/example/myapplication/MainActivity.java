@@ -1,6 +1,7 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -15,7 +16,9 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.util.concurrent.ListenableFuture;
 
+import androidx.ads.identifier.AdvertisingIdInfo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
@@ -25,6 +28,8 @@ import android.view.View;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
@@ -61,6 +66,11 @@ public class MainActivity extends AppCompatActivity {
     HelperSensorLight lightSensor;
     HelperSensorAcceleration accelerationSensor;
     HelperSensorMagnetic magneticSensor;
+
+
+//    public static ListenableFuture<AdvertisingIdInfo> getAdvertisingIdInfo(Context context) {
+//        return null;
+//    }
 
 
     @Override
@@ -112,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
-
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
@@ -145,6 +154,9 @@ public class MainActivity extends AppCompatActivity {
 
         updateGPS();
         updateSensors();
+
+        // adding AAID
+
     }
 
     private void updateSensors() {
@@ -193,6 +205,7 @@ public class MainActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
+            // yeah idk about what is going on up here
         }
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         updateGPS();
@@ -218,7 +231,6 @@ public class MainActivity extends AppCompatActivity {
 
          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
-
              // ##### MAYBE ADD MORE HERE ##### //
              // Current location more likely to throw errors and is limited to
 //             fusedLocationProviderClient.getCurrentLocation(priority int and CancellationToken).addOnSuccessListener(this,
@@ -238,7 +250,7 @@ public class MainActivity extends AppCompatActivity {
          }
     }
 
-    private void updateUIValue(Location location) {
+    private void updateUIValue(@NotNull Location location) {
         tv_lat.setText(String.valueOf(location.getLatitude()));
         tv_lon.setText(String.valueOf(location.getLongitude()));
         tv_accuracy.setText(String.valueOf(location.getAccuracy()));
