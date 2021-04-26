@@ -23,6 +23,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
+import android.provider.Settings;
 import android.view.View;
 
 import android.widget.Switch;
@@ -45,8 +46,11 @@ public class MainActivity extends AppCompatActivity {
     // considering moving sensor specific variables to helper
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_sensor, tv_updates, tv_address, tv_temp, tv_light,
-            tv_pressure, tv_humidity, tv_proximity, tv_accelerator, tv_magnetic;
+            tv_pressure, tv_humidity, tv_proximity, tv_accelerator, tv_magnetic, tv_AID;
 
+    String device_AID;
+
+    // TODO: remove switches, keep functionality
     Switch sw_locations, sw_gps, sw_sensors;
 
     // The heart and soul of this app
@@ -97,6 +101,12 @@ public class MainActivity extends AppCompatActivity {
         sw_gps = findViewById(R.id.sw_gps);
         sw_locations = findViewById(R.id.sw_locationsupdates);
         sw_sensors = findViewById(R.id.sw_sensors);
+
+        // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
+        tv_AID = findViewById(R.id.tv_AID);
+        // studio is telling me using "getString" to get Android ID is not recommended
+        device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        tv_AID.setText(device_AID);
 
         // sensors
         tempSensor = new HelperSensorTemp();
@@ -205,8 +215,10 @@ public class MainActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
+
             // yeah idk about what is going on up here
         }
+        // TODO: check this out...
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         updateGPS();
     }

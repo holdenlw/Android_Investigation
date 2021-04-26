@@ -43,6 +43,6 @@ public class HelperSensorMagnetic extends Application implements SensorEventList
         if (magSensor == null) {
             return "No sensor";
         }
-        return "I got to do the physics" + Arrays.toString(magValues);
+        return Arrays.toString(magValues);
     }
 }

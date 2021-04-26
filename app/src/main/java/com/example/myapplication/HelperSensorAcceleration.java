@@ -43,6 +43,6 @@ public class HelperSensorAcceleration extends Application implements SensorEvent
         if (accelSensor == null) {
             return "No sensor";
         }
-        return "I got to do the physics " + Arrays.toString(accelValues);
+        return Arrays.toString(accelValues);
     }
 }
