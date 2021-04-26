@@ -38,25 +38,27 @@ import static android.os.Build.*;
 
 // the sauce of the project: https://youtu.be/_xUcYfbtfsI
 public class MainActivity extends AppCompatActivity {
-    // the cool thing to do is set global constants
+    // Global constants
     public static final int DEFAULT_UPDATE_INTERVAL = 3;
     public static final int FASTEST_UPDATE_INTERVAL = 5;
     private static final int PERMISSION_FINE_LOCATION = 99;
 
-    // considering moving sensor specific variables to helper
+    // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
-            tv_sensor, tv_updates, tv_address, tv_temp, tv_light,
-            tv_pressure, tv_humidity, tv_proximity, tv_accelerator, tv_magnetic, tv_AID;
+            tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID;
 
     String device_AID;
+    // TODO: Get Advertising ID
 
-    // TODO: remove switches, keep functionality
-    Switch sw_locations, sw_gps, sw_sensors;
+    //Keeping sensors switch for testing purposes
+    //Switch sw_locations, sw_gps, sw_sensors;
+    Switch sw_sensors;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
     // tracking location
-    boolean updateOn = false;
+//    boolean updateOn = false;
     // for config
     LocationRequest locationRequest;
 
@@ -72,10 +74,6 @@ public class MainActivity extends AppCompatActivity {
     HelperSensorMagnetic magneticSensor;
 
 
-//    public static ListenableFuture<AdvertisingIdInfo> getAdvertisingIdInfo(Context context) {
-//        return null;
-//    }
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,8 +85,6 @@ public class MainActivity extends AppCompatActivity {
         tv_altitude = findViewById(R.id.tv_altitude);
         tv_accuracy = findViewById(R.id.tv_accuracy);
         tv_speed = findViewById(R.id.tv_speed);
-        tv_sensor = findViewById(R.id.tv_sensor);
-        tv_updates = findViewById(R.id.tv_updates);
         tv_address = findViewById(R.id.tv_address);
         tv_temp = findViewById(R.id.tv_temp);
         tv_light = findViewById(R.id.tv_light);
@@ -98,11 +94,10 @@ public class MainActivity extends AppCompatActivity {
         tv_accelerator = findViewById(R.id.tv_accelerator);
         tv_magnetic = findViewById(R.id.tv_magnetic);
 
-        sw_gps = findViewById(R.id.sw_gps);
-        sw_locations = findViewById(R.id.sw_locationsupdates);
         sw_sensors = findViewById(R.id.sw_sensors);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
+        // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
         tv_AID = findViewById(R.id.tv_AID);
         // studio is telling me using "getString" to get Android ID is not recommended
         device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -127,7 +122,6 @@ public class MainActivity extends AppCompatActivity {
         // how often request occurs at highest frequency
         locationRequest.setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL);
 
-        // NOTE: studio says I should access via the class, not the instance...
         // Highest priority setting -- BALANCED recommended
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
@@ -140,32 +134,35 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sw_gps.setOnClickListener(v -> {
-            if (sw_gps.isChecked()) {
-                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                tv_sensor.setText("Using GPS");
-            } else {
-                locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-                tv_sensor.setText("Using Cell Towers + WiFi");
-            }
-        });
+        // TODO:
+        // Remove UI
+//        sw_gps.setOnClickListener(v -> {
+//            if (sw_gps.isChecked()) {
+//                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+//                tv_sensor.setText("Using GPS");
+//            } else {
+//                locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+//                tv_sensor.setText("Using Cell Towers + WiFi");
+//            }
+//        });
 
-        sw_locations.setOnClickListener(v -> {
-            if (sw_locations.isChecked()) {
-                startLocationUpdates();
-            } else stopLocationUpdates();
-        });
-
+        // TODO:
+        // Remove UI features
+//        sw_locations.setOnClickListener(v -> {
+//            if (sw_locations.isChecked()) {
+//                startLocationUpdates();
+//            } else stopLocationUpdates();
+//        });
+//
         sw_sensors.setOnClickListener(v -> {
             if (sw_sensors.isChecked()) {
                 updateSensors();
             } else turnOffSensors();
         });
 
+        startLocationUpdates();
         updateGPS();
         updateSensors();
-
-        // adding AAID
 
     }
 
@@ -191,21 +188,22 @@ public class MainActivity extends AppCompatActivity {
         tv_magnetic.setText("Off");
     }
 
-    private void stopLocationUpdates() {
-        tv_updates.setText("Location is NOT being tracked");
-        tv_lat.setText("Off");
-        tv_lon.setText("Off");
-        tv_accuracy.setText("Off");
-        tv_address.setText("Off");
-        tv_speed.setText("Off");
-        tv_altitude.setText("Off");
-        tv_sensor.setText("Off");
-
-        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-    }
+    // Turning off sensors and location tracking
+//    private void stopLocationUpdates() {
+//        tv_updates.setText("Location is NOT being tracked");
+//        tv_lat.setText("Off");
+//        tv_lon.setText("Off");
+//        tv_accuracy.setText("Off");
+//        tv_address.setText("Off");
+//        tv_speed.setText("Off");
+//        tv_altitude.setText("Off");
+//        tv_sensor.setText("Off");
+//
+//        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+//    }
 
     private void startLocationUpdates() {
-        tv_updates.setText("Location is being tracked");
+//        tv_updates.setText("Location is being tracked");
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions

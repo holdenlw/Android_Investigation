@@ -27,7 +27,7 @@
     <string name="only_gps">Only GPS</string>
     <string name="address">Address:</string>
     <string name="location_information">Location Information</string>
-    <string name="environmental_sensors">Enviromental Sensors</string>
+    <string name="environmental_sensors">Environmental Sensors</string>
     <string name="motion_sensors">Motion Sensors</string>
     <string name="temp">Temp:</string>
     <string name="f_0_00">0.00</string>
@@ -44,4 +44,6 @@
     <string name="magnetic_field">Magnetic Field:</string>
     <string name="l_0_00">0.00</string>
     <string name="other_sensors">Other Sensors</string>
+    <string name="tv_AID">device android id</string>
+    <string name="tv_labelAID">Android ID:</string>
 </resources>

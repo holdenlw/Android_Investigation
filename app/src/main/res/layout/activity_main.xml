@@ -94,60 +94,60 @@
         app:layout_constraintStart_toEndOf="@+id/tv_labelspeed"
         app:layout_constraintTop_toTopOf="@+id/tv_labelspeed" />
 
-    <TextView
-        android:id="@+id/tv_labelsensor"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/sensor"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sw_gps" />
+<!--    <TextView-->
+<!--        android:id="@+id/tv_labelsensor"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:text="@string/sensor"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/divider" />-->
 
-    <TextView
-        android:id="@+id/tv_sensor"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/cell_tower_wifi"
-        app:layout_constraintStart_toEndOf="@+id/tv_labelsensor"
-        app:layout_constraintTop_toTopOf="@+id/tv_labelsensor" />
+<!--    <TextView-->
+<!--        android:id="@+id/tv_sensor"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/cell_tower_wifi"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/tv_labelsensor"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/tv_labelsensor" />-->
 
-    <TextView
-        android:id="@+id/tv_labelupdates"
-        android:layout_width="100dp"
-        android:layout_height="wrap_content"
-        android:text="@string/updates"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/sw_locationsupdates" />
+<!--    <TextView-->
+<!--        android:id="@+id/tv_labelupdates"-->
+<!--        android:layout_width="100dp"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/updates"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/sw_locationsupdates" />-->
 
-    <TextView
-        android:id="@+id/tv_updates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/off"
-        app:layout_constraintStart_toEndOf="@+id/tv_labelupdates"
-        app:layout_constraintTop_toTopOf="@+id/tv_labelupdates" />
+<!--    <TextView-->
+<!--        android:id="@+id/tv_updates"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:text="@string/off"-->
+<!--        app:layout_constraintStart_toEndOf="@+id/tv_labelupdates"-->
+<!--        app:layout_constraintTop_toTopOf="@+id/tv_labelupdates" />-->
 
-    <Switch
-        android:id="@+id/sw_locationsupdates"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:checked="true"
-        android:text="@string/location_updates"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/divider" />
+<!--    <Switch-->
+<!--        android:id="@+id/sw_locationsupdates"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:checked="true"-->
+<!--        android:text="@string/location_updates"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/divider" />-->
 
-    <Switch
-        android:id="@+id/sw_gps"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="@string/only_gps"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.446"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_labelupdates" />
+<!--    <Switch-->
+<!--        android:id="@+id/sw_gps"-->
+<!--        android:layout_width="wrap_content"-->
+<!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginTop="16dp"-->
+<!--        android:text="@string/only_gps"-->
+<!--        app:layout_constraintEnd_toEndOf="parent"-->
+<!--        app:layout_constraintHorizontal_bias="0.446"-->
+<!--        app:layout_constraintStart_toStartOf="parent"-->
+<!--        app:layout_constraintTop_toBottomOf="@+id/tv_labelupdates" />-->
 
     <TextView
         android:id="@+id/tv_address"
@@ -344,16 +344,17 @@
         android:text="@string/l_0_00"
         app:layout_constraintStart_toEndOf="@+id/tv_lablemag"
         app:layout_constraintTop_toBottomOf="@+id/title_3" />
+
     <TextView
         android:id="@+id/tv_labelAID"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
-        android:text="Android ID:"
-        app:layout_constraintStart_toEndOf="@+id/tv_sensor"
-        app:layout_constraintTop_toBottomOf="@+id/tv_sensor" />
+        android:layout_marginTop="76dp"
+        android:text="@string/tv_labelAID"
+        app:layout_constraintStart_toStartOf="@+id/sw_sensors"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <TextView
         android:id="@+id/tv_AID"
@@ -361,10 +362,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
-        android:text="device android id"
+        android:layout_marginTop="76dp"
+        android:text="@string/tv_AID"
         app:layout_constraintStart_toEndOf="@+id/tv_labelAID"
-        app:layout_constraintTop_toBottomOf="@+id/tv_sensor" />
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <Switch
         android:id="@+id/sw_sensors"
@@ -374,8 +375,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
         android:text="@string/other_sensors"
-        app:layout_constraintStart_toEndOf="@+id/sw_gps"
-
-        app:layout_constraintTop_toBottomOf="@+id/sw_locationsupdates" />
+        app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
