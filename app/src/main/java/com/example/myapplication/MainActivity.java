@@ -179,13 +179,13 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void turnOffSensors() {
-        tv_temp.setText("Off");
-        tv_light.setText("Off");
-        tv_pressure.setText("Off");
-        tv_humidity.setText("Off");
-        tv_proximity.setText("Off");
-        tv_accelerator.setText("Off");
-        tv_magnetic.setText("Off");
+        tv_temp.setText(R.string.tv_temp);
+        tv_light.setText(R.string.tv_light);
+        tv_pressure.setText(R.string.tv_pressure);
+        tv_humidity.setText(R.string.tv_humidity);
+        tv_proximity.setText(R.string.tv_proximity);
+        tv_accelerator.setText(R.string.tv_accelerator);
+        tv_magnetic.setText(R.string.tv_magnetic);
     }
 
     // Turning off sensors and location tracking
@@ -268,12 +268,12 @@ public class MainActivity extends AppCompatActivity {
         // not every phone has the sensors of interest
         if (location.hasAltitude()) {
             tv_altitude.setText(String.valueOf(location.getAltitude()));
-        } else tv_altitude.setText("No Altitude Sensor");
+        } else tv_altitude.setText(R.string.tv_altitude);
 
         // also a speed accuracy sensor to check out
         if (location.hasSpeed()) {
             tv_speed.setText(String.valueOf(location.getSpeed()));
-        } else tv_speed.setText("No Speed Sensor or no speed detected");
+        } else tv_speed.setText(R.string.tv_speed);
 
         Geocoder geocoder = new Geocoder(MainActivity.this);
 
@@ -283,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             tv_address.setText(addresses.get(0).getAddressLine(0));
 
         } catch (Exception e) {
-            tv_address.setText("Unable to get address");
+            tv_address.setText(R.string.tv_address);
         }
     }
 

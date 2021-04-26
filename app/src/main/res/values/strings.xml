@@ -46,4 +46,14 @@
     <string name="other_sensors">Other Sensors</string>
     <string name="tv_AID">device android id</string>
     <string name="tv_labelAID">Android ID:</string>
+    <string name="tv_altitude">No Altitude Sensor</string>
+    <string name="tv_speed">No Speed Sensor or no speed detected</string>
+    <string name="tv_address">Unable to get address</string>
+    <string name="tv_temp">Off</string>
+    <string name="tv_light">Off</string>
+    <string name="tv_pressure">Off</string>
+    <string name="tv_humidity">Off</string>
+    <string name="tv_proximity">Off</string>
+    <string name="tv_accelerator">Off</string>
+    <string name="tv_magnetic">Off</string>
 </resources>
