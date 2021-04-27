@@ -56,4 +56,8 @@
     <string name="tv_proximity">Off</string>
     <string name="tv_accelerator">Off</string>
     <string name="tv_magnetic">Off</string>
+    <string name="tv_updates">Location is NOT being tracked</string>
+    <string name="tv_lat">Off</string>
+    <string name="tv_lon">Off</string>
+    <string name="tv_accuracy">Off</string>
 </resources>

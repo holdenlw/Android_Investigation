@@ -115,6 +115,9 @@
 <!--        android:id="@+id/tv_labelupdates"-->
 <!--        android:layout_width="100dp"-->
 <!--        android:layout_height="wrap_content"-->
+<!--        android:layout_marginStart="240dp"-->
+<!--        android:layout_marginLeft="240dp"-->
+<!--        android:layout_marginTop="8dp"-->
 <!--        android:text="@string/updates"-->
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/sw_locationsupdates" />-->
@@ -127,18 +130,7 @@
 <!--        app:layout_constraintStart_toEndOf="@+id/tv_labelupdates"-->
 <!--        app:layout_constraintTop_toTopOf="@+id/tv_labelupdates" />-->
 
-<!--    <Switch-->
-<!--        android:id="@+id/sw_locationsupdates"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_marginTop="16dp"-->
-<!--        android:checked="true"-->
-<!--        android:text="@string/location_updates"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toBottomOf="@+id/divider" />-->
-
-<!--    <Switch-->
+    <!--    <Switch-->
 <!--        android:id="@+id/sw_gps"-->
 <!--        android:layout_width="wrap_content"-->
 <!--        android:layout_height="wrap_content"-->
@@ -148,6 +140,18 @@
 <!--        app:layout_constraintHorizontal_bias="0.446"-->
 <!--        app:layout_constraintStart_toStartOf="parent"-->
 <!--        app:layout_constraintTop_toBottomOf="@+id/tv_labelupdates" />-->
+
+    <Switch
+        android:id="@+id/sw_locationsupdates"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="32dp"
+        android:checked="true"
+        android:text="@string/location_updates"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.776"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
 
     <TextView
         android:id="@+id/tv_address"
@@ -374,6 +378,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="32dp"
+        android:checked="true"
         android:text="@string/other_sensors"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/divider" />

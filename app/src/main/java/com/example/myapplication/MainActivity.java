@@ -53,12 +53,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Keeping sensors switch for testing purposes
     //Switch sw_locations, sw_gps, sw_sensors;
-    Switch sw_sensors;
+    Switch sw_sensors, sw_locations;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
     // tracking location
-//    boolean updateOn = false;
+    boolean updateOn = false;
     // for config
     LocationRequest locationRequest;
 
@@ -94,6 +94,8 @@ public class MainActivity extends AppCompatActivity {
         tv_accelerator = findViewById(R.id.tv_accelerator);
         tv_magnetic = findViewById(R.id.tv_magnetic);
 
+        // I learned about the "checked" feature of xml... makes the collection automatic
+        sw_locations = findViewById(R.id.sw_locationsupdates);
         sw_sensors = findViewById(R.id.sw_sensors);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
@@ -129,13 +131,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
-                // save location
                 updateUIValue(locationResult.getLastLocation());
             }
         };
 
-        // TODO:
-        // Remove UI
+
 //        sw_gps.setOnClickListener(v -> {
 //            if (sw_gps.isChecked()) {
 //                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -146,24 +146,20 @@ public class MainActivity extends AppCompatActivity {
 //            }
 //        });
 
-        // TODO:
-        // Remove UI features
-//        sw_locations.setOnClickListener(v -> {
-//            if (sw_locations.isChecked()) {
-//                startLocationUpdates();
-//            } else stopLocationUpdates();
-//        });
-//
+       // don't remove this for now
+        sw_locations.setOnClickListener(v -> {
+            if (sw_locations.isChecked()) {
+                startLocationUpdates();
+            } else stopLocationUpdates();
+        });
+
         sw_sensors.setOnClickListener(v -> {
             if (sw_sensors.isChecked()) {
                 updateSensors();
             } else turnOffSensors();
         });
 
-        startLocationUpdates();
         updateGPS();
-        updateSensors();
-
     }
 
     private void updateSensors() {
@@ -189,18 +185,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     // Turning off sensors and location tracking
-//    private void stopLocationUpdates() {
-//        tv_updates.setText("Location is NOT being tracked");
-//        tv_lat.setText("Off");
-//        tv_lon.setText("Off");
-//        tv_accuracy.setText("Off");
-//        tv_address.setText("Off");
-//        tv_speed.setText("Off");
-//        tv_altitude.setText("Off");
-//        tv_sensor.setText("Off");
-//
-//        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
-//    }
+    private void stopLocationUpdates() {
+        tv_lat.setText(R.string.tv_lat);
+        tv_lon.setText(R.string.tv_lon);
+        tv_accuracy.setText(R.string.tv_accuracy);
+        tv_address.setText("Off");
+        tv_speed.setText("Off");
+        tv_altitude.setText("Off");
+        // Studio is mad but this logic is stupid
+        fusedLocationProviderClient.removeLocationUpdates(locationCallback);
+    }
 
     private void startLocationUpdates() {
 //        tv_updates.setText("Location is being tracked");
@@ -216,7 +210,7 @@ public class MainActivity extends AppCompatActivity {
 
             // yeah idk about what is going on up here
         }
-        // TODO: check this out...
+        /* TODO: check this out... */
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         updateGPS();
     }
