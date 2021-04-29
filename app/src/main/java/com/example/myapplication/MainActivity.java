@@ -16,23 +16,29 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
+import androidx.ads.identifier.AdvertisingIdClient;
 import androidx.ads.identifier.AdvertisingIdInfo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 
 import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
+import java.util.concurrent.Executors;
 
 import static android.os.Build.*;
 
@@ -46,10 +52,14 @@ public class MainActivity extends AppCompatActivity {
     // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
-            tv_proximity, tv_accelerator, tv_magnetic, tv_AID;
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID;
 
     String device_AID;
-    // TODO: Get Advertising ID
+
+    String account_AAID;
+    Boolean isLimitedTrackingOn;
+    String providerPackage;
+    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
     //Keeping sensors switch for testing purposes
     //Switch sw_locations, sw_gps, sw_sensors;
@@ -93,6 +103,7 @@ public class MainActivity extends AppCompatActivity {
         tv_proximity = findViewById(R.id.tv_proximity);
         tv_accelerator = findViewById(R.id.tv_accelerator);
         tv_magnetic = findViewById(R.id.tv_magnetic);
+        tv_AAID = findViewById(R.id.tv_AAID);
 
         // I learned about the "checked" feature of xml... makes the collection automatic
         sw_locations = findViewById(R.id.sw_locationsupdates);
@@ -135,7 +146,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
 //        sw_gps.setOnClickListener(v -> {
 //            if (sw_gps.isChecked()) {
 //                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
@@ -160,6 +170,36 @@ public class MainActivity extends AppCompatActivity {
         });
 
         updateGPS();
+
+        loadTheAAID();
+        // Advertising ID
+    }
+
+    private void loadTheAAID() {
+        if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(this)) {
+            listenableFutureAAID = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+
+            Futures.addCallback(listenableFutureAAID, new FutureCallback<AdvertisingIdInfo>() {
+                @Override
+                public void onSuccess(@NullableDecl AdvertisingIdInfo result) {
+                    assert result != null;
+                    account_AAID = result.getId();
+                    providerPackage = result.getProviderPackageName();
+                    isLimitedTrackingOn = result.isLimitAdTrackingEnabled();
+                }
+
+                @Override
+                public void onFailure(@NotNull Throwable t) {
+                    Log.e("MY_APP_TAG",
+                            "Failed to connect to Advertising ID provider.");
+                }
+
+            }, Executors.newSingleThreadExecutor());
+            // this is pretty much the official snippet + the fixed error in their java code
+            tv_AAID.setText(account_AAID);
+        } else {
+            tv_AAID.setText("AAID not available");
+        }
     }
 
     private void updateSensors() {

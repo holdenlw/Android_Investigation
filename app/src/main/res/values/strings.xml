@@ -60,4 +60,7 @@
     <string name="tv_lat">Off</string>
     <string name="tv_lon">Off</string>
     <string name="tv_accuracy">Off</string>
+    <string name="tv_labelAAID">Android Ad ID:</string>
+    <string name="tv_AAID">AAID</string>
+    <string name="tv_labelAID2">Android Device ID:</string>
 </resources>

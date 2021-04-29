@@ -356,7 +356,7 @@
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
         android:layout_marginTop="76dp"
-        android:text="@string/tv_labelAID"
+        android:text="@string/tv_labelAID2"
         app:layout_constraintStart_toStartOf="@+id/sw_sensors"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
@@ -381,6 +381,28 @@
         android:checked="true"
         android:text="@string/other_sensors"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
+        app:layout_constraintTop_toBottomOf="@+id/divider" />
+
+    <TextView
+        android:id="@+id/tv_labelAAID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="12dp"
+        android:text="@string/tv_labelAAID"
+        app:layout_constraintStart_toStartOf="@+id/sw_sensors"
+        app:layout_constraintTop_toBottomOf="@+id/tv_labelAID" />
+
+    <TextView
+        android:id="@+id/tv_AAID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
+        android:layout_marginTop="108dp"
+        android:text="@string/tv_AAID"
+        app:layout_constraintStart_toEndOf="@+id/tv_labelAAID"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
