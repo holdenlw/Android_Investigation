@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -24,6 +25,7 @@ import androidx.ads.identifier.AdvertisingIdClient;
 import androidx.ads.identifier.AdvertisingIdInfo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 
 import android.provider.Settings;
@@ -63,12 +65,12 @@ public class MainActivity extends AppCompatActivity {
 
     //Keeping sensors switch for testing purposes
     //Switch sw_locations, sw_gps, sw_sensors;
-    Switch sw_sensors, sw_locations;
+    SwitchCompat sw_sensors, sw_locations;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
     // tracking location
-    boolean updateOn = false;
+//    boolean updateOn = false;
     // for config
     LocationRequest locationRequest;
 
@@ -82,8 +84,6 @@ public class MainActivity extends AppCompatActivity {
     HelperSensorLight lightSensor;
     HelperSensorAcceleration accelerationSensor;
     HelperSensorMagnetic magneticSensor;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -170,36 +170,40 @@ public class MainActivity extends AppCompatActivity {
         });
 
         updateGPS();
-
         loadTheAAID();
-        // Advertising ID
+
     }
 
     private void loadTheAAID() {
-        if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(this)) {
-            listenableFutureAAID = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+        try {
+            if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(this)) {
+                listenableFutureAAID = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
 
-            Futures.addCallback(listenableFutureAAID, new FutureCallback<AdvertisingIdInfo>() {
-                @Override
-                public void onSuccess(@NullableDecl AdvertisingIdInfo result) {
-                    assert result != null;
-                    account_AAID = result.getId();
-                    providerPackage = result.getProviderPackageName();
-                    isLimitedTrackingOn = result.isLimitAdTrackingEnabled();
-                }
+                Futures.addCallback(listenableFutureAAID, new FutureCallback<AdvertisingIdInfo>() {
+                    @Override
+                    public void onSuccess(@NullableDecl AdvertisingIdInfo result) {
+                        assert result != null;
+                        account_AAID = result.getId();
+                        providerPackage = result.getProviderPackageName();
+                        isLimitedTrackingOn = result.isLimitAdTrackingEnabled();
+                    }
 
-                @Override
-                public void onFailure(@NotNull Throwable t) {
-                    Log.e("MY_APP_TAG",
-                            "Failed to connect to Advertising ID provider.");
-                }
+                    @Override
+                    public void onFailure(@NotNull Throwable t) {
+                        Log.e("MY_APP_TAG",
+                                "Failed to connect to Advertising ID provider.");
+                    }
 
-            }, Executors.newSingleThreadExecutor());
-            // this is pretty much the official snippet + the fixed error in their java code
-            tv_AAID.setText(account_AAID);
-        } else {
-            tv_AAID.setText("AAID not available");
+                }, Executors.newSingleThreadExecutor());
+                // this is pretty much the official snippet + the fixed error in their java code
+                tv_AAID.setText(account_AAID);
+            } else {
+                tv_AAID.setText("AAID not available");
+            }
+        } catch (Exception e) {
+            System.out.println(e);
         }
+
     }
 
     private void updateSensors() {
