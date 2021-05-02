@@ -39,6 +39,7 @@ import android.widget.Toast;
 import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.Executors;
 
@@ -84,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
     HelperSensorLight lightSensor;
     HelperSensorAcceleration accelerationSensor;
     HelperSensorMagnetic magneticSensor;
+
+    // Storage
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
