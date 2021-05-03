@@ -63,4 +63,5 @@
     <string name="tv_labelAAID">Android Ad ID:</string>
     <string name="tv_AAID">AAID</string>
     <string name="tv_labelAID2">Android Device ID:</string>
+    <string name="sw_id">Get Android Ad ID</string>
 </resources>

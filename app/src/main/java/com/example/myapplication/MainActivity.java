@@ -6,10 +6,13 @@ import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 
+//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
@@ -17,12 +20,12 @@ import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.common.util.concurrent.FutureCallback;
-import com.google.common.util.concurrent.Futures;
-import com.google.common.util.concurrent.ListenableFuture;
+//import com.google.common.util.concurrent.FutureCallback;
+//import com.google.common.util.concurrent.Futures;
+//import com.google.common.util.concurrent.ListenableFuture;
 
-import androidx.ads.identifier.AdvertisingIdClient;
-import androidx.ads.identifier.AdvertisingIdInfo;
+//import androidx.ads.identifier.AdvertisingIdClient;
+//import androidx.ads.identifier.AdvertisingIdInfo;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
@@ -36,14 +39,17 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.checkerframework.checker.nullness.compatqual.NullableDecl;
+//import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.Executors;
 
 import static android.os.Build.*;
+import static android.widget.Toast.makeText;
+//import static com.google.android.gms.ads.identifier.AdvertisingIdClient.*;
 
 // the sauce of the project: https://youtu.be/_xUcYfbtfsI
 public class MainActivity extends AppCompatActivity {
@@ -59,14 +65,13 @@ public class MainActivity extends AppCompatActivity {
 
     String device_AID;
 
-    String account_AAID;
-    Boolean isLimitedTrackingOn;
-    String providerPackage;
-    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
+//    String account_AAID;
+//    Boolean isLimitedTrackingOn;
+//    String providerPackage;
+//    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
     //Keeping sensors switch for testing purposes
-    //Switch sw_locations, sw_gps, sw_sensors;
-    SwitchCompat sw_sensors, sw_locations;
+    SwitchCompat sw_sensors, sw_locations, sw_id;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -112,6 +117,7 @@ public class MainActivity extends AppCompatActivity {
         // I learned about the "checked" feature of xml... makes the collection automatic
         sw_locations = findViewById(R.id.sw_locationsupdates);
         sw_sensors = findViewById(R.id.sw_sensors);
+        sw_id = findViewById(R.id.sw_id);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
@@ -173,41 +179,19 @@ public class MainActivity extends AppCompatActivity {
             } else turnOffSensors();
         });
 
+        sw_id.setOnClickListener(v -> {
+            if (sw_id.isChecked()) {
+                loadTheAAID();
+            } else tv_AAID.setText("Turn on the switch");
+        });
+
         updateGPS();
-        loadTheAAID();
+        // loading the AAID from the main onCreate is not a good idea
 
     }
 
     private void loadTheAAID() {
-        try {
-            if (AdvertisingIdClient.isAdvertisingIdProviderAvailable(this)) {
-                listenableFutureAAID = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
-
-                Futures.addCallback(listenableFutureAAID, new FutureCallback<AdvertisingIdInfo>() {
-                    @Override
-                    public void onSuccess(@NullableDecl AdvertisingIdInfo result) {
-                        assert result != null;
-                        account_AAID = result.getId();
-                        providerPackage = result.getProviderPackageName();
-                        isLimitedTrackingOn = result.isLimitAdTrackingEnabled();
-                    }
-
-                    @Override
-                    public void onFailure(@NotNull Throwable t) {
-                        Log.e("MY_APP_TAG",
-                                "Failed to connect to Advertising ID provider.");
-                    }
-
-                }, Executors.newSingleThreadExecutor());
-                // this is pretty much the official snippet + the fixed error in their java code
-                tv_AAID.setText(account_AAID);
-            } else {
-                tv_AAID.setText("AAID not available");
-            }
-        } catch (Exception e) {
-            System.out.println(e);
-        }
-
+        tv_AAID.setText("Getting the AD ID is awful");
     }
 
     private void updateSensors() {
@@ -271,7 +255,7 @@ public class MainActivity extends AppCompatActivity {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 updateGPS();
             } else {
-                Toast.makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
+                makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
                 finish();
             }
         }

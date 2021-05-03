@@ -40,7 +40,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
     implementation 'com.google.android.gms:play-services-location:18.0.0'
-    implementation 'androidx.ads:ads-identifier:1.0.0-alpha04'
-    implementation 'com.google.guava:guava:28.0-android'
+
+
 
 }
