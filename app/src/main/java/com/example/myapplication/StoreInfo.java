@@ -24,20 +24,25 @@ import java.util.HashMap;
 public class StoreInfo {
 
     private HashMap<String, ArrayList<String>> data;
-    private String id;
+    private final String id;
 
     public StoreInfo(Context context, String id, String cords, String alt, String speed, String address, String accuracy) {
         // id = Android Device ID + time
         this.id = id + Calendar.getInstance().toString();
-        this.data = new HashMap<String, ArrayList<String>>();
+        this.data = new HashMap<>();
 
         // when obj is created give the current values
-        this.data.put("Coordinates", new ArrayList<String>()).add(cords);
-        this.data.put("Altitude", new ArrayList<String>()).add(alt);
-        this.data.put("Speed", new ArrayList<String>()).add(speed);
-        this.data.put("Address", new ArrayList<String>()).add(address);
-        this.data.put("Confidence", new ArrayList<String>()).add(accuracy);
+        this.data.put("Coordinates", new ArrayList<>()).add(cords);
+        this.data.put("Altitude", new ArrayList<>()).add(alt);
+        this.data.put("Speed", new ArrayList<>()).add(speed);
+        this.data.put("Address", new ArrayList<>()).add(address);
+        this.data.put("Confidence", new ArrayList<>()).add(accuracy);
 
+    }
+
+    // cheating method
+    public String getData() {
+        return data.toString();
     }
 
     // writing file and putting it into local storage
@@ -48,6 +53,27 @@ public class StoreInfo {
         } catch (IOException e) {
             Toast.makeText(context, "Can't write file" ,Toast.LENGTH_SHORT).show();
         }
+    }
+
+    // for now this is just testing that this all works
+    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
+    public String readFile(Context context) {
+        StringBuilder stringBuilder = new StringBuilder();
+        try {
+            FileInputStream fis = context.openFileInput(id + ".txt");
+            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
+            BufferedReader reader = new BufferedReader(inputStreamReader);
+            String line = reader.readLine();
+            while (line != null) {
+                stringBuilder.append(line).append('\n');
+                line = reader.readLine();
+            }
+        } catch (FileNotFoundException e) {
+            Toast.makeText(context, "Can't find file", Toast.LENGTH_SHORT).show();
+        } catch (IOException e) {
+            Toast.makeText(context, "idk", Toast.LENGTH_SHORT).show();
+        }
+        return stringBuilder.toString();
     }
 
     public void updateData(String cords, String alt, String speed, String address, String accuracy) {
