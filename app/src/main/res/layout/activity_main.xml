@@ -383,24 +383,24 @@
         app:layout_constraintStart_toStartOf="@+id/sw_id"
         app:layout_constraintTop_toBottomOf="@+id/sw_id" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/sw_getData"
+    <Button
+        android:id="@+id/b_getData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="60dp"
-        android:layout_marginLeft="60dp"
+        android:layout_marginStart="32dp"
+        android:layout_marginLeft="32dp"
         android:layout_marginTop="212dp"
         android:checked="false"
         android:text="@string/sw_getData"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-    <androidx.appcompat.widget.SwitchCompat
-        android:id="@+id/sw_readFile"
+    <Button
+        android:id="@+id/b_readFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="216dp"
-        android:layout_marginLeft="216dp"
+        android:layout_marginStart="240dp"
+        android:layout_marginLeft="240dp"
         android:layout_marginTop="212dp"
         android:checked="false"
         android:text="@string/sw_readFile"

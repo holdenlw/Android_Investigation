@@ -28,6 +28,7 @@ import androidx.core.app.ActivityCompat;
 
 import android.provider.Settings;
 
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -59,8 +60,9 @@ public class MainActivity extends AppCompatActivity {
 //    String providerPackage;
 //    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
-    // Switches are for testing purposes
-    SwitchCompat sw_sensors, sw_locations, sw_id, sw_getData, sw_readFile;
+    // Switches and buttons are for testing purposes
+    SwitchCompat sw_sensors, sw_locations, sw_id;
+    Button b_getData, b_readFile;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -110,8 +112,8 @@ public class MainActivity extends AppCompatActivity {
         sw_id = findViewById(R.id.sw_id);
 
         // switches for testing storage
-        sw_getData = findViewById(R.id.sw_getData);
-        sw_readFile = findViewById(R.id.sw_readFile);
+        b_getData = findViewById(R.id.b_getData);
+        b_readFile = findViewById(R.id.b_readFile);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
@@ -174,11 +176,11 @@ public class MainActivity extends AppCompatActivity {
             } else tv_AAID.setText("Don't worry about this for now");
         });
 
-        sw_getData.setOnClickListener(v -> {
+        b_getData.setOnClickListener(v -> {
             // do something
         });
 
-        sw_readFile.setOnClickListener(v -> {
+        b_readFile.setOnClickListener(v -> {
             // do something
         });
 
