@@ -1,7 +1,6 @@
 package com.example.myapplication;
 
 import android.Manifest;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
@@ -11,15 +10,11 @@ import android.os.Bundle;
 
 //import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 //import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
-import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 //import com.google.common.util.concurrent.FutureCallback;
 //import com.google.common.util.concurrent.Futures;
 //import com.google.common.util.concurrent.ListenableFuture;
@@ -32,20 +27,14 @@ import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 
 import android.provider.Settings;
-import android.util.Log;
-import android.view.View;
 
-import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
 //import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.Executors;
 
 import static android.os.Build.*;
 import static android.widget.Toast.makeText;
@@ -70,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
 //    String providerPackage;
 //    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
-    //Keeping sensors switch for testing purposes
-    SwitchCompat sw_sensors, sw_locations, sw_id;
+    // Switches are for testing purposes
+    SwitchCompat sw_sensors, sw_locations, sw_id, sw_getData, sw_readFile;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -92,7 +81,8 @@ public class MainActivity extends AppCompatActivity {
     HelperSensorMagnetic magneticSensor;
 
     // Storage
-
+    StoreInfo storage;
+    Boolean initialize = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +109,10 @@ public class MainActivity extends AppCompatActivity {
         sw_sensors = findViewById(R.id.sw_sensors);
         sw_id = findViewById(R.id.sw_id);
 
+        // switches for testing storage
+        sw_getData = findViewById(R.id.sw_getData);
+        sw_readFile = findViewById(R.id.sw_readFile);
+
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
         tv_AID = findViewById(R.id.tv_AID);
@@ -137,16 +131,10 @@ public class MainActivity extends AppCompatActivity {
 
         // set properties of request
         locationRequest = LocationRequest.create();
-
-        // how often default location request occurs
         // We can keep this simple -- more likely to get errors if running too fast
-        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL);
-
-        // how often request occurs at highest frequency
-        locationRequest.setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL);
-
+        // how often default location request occurs
         // Highest priority setting -- BALANCED recommended
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL).setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
             @Override
@@ -155,6 +143,7 @@ public class MainActivity extends AppCompatActivity {
                 updateUIValue(locationResult.getLastLocation());
             }
         };
+        initialize = false;
 
 //        sw_gps.setOnClickListener(v -> {
 //            if (sw_gps.isChecked()) {
@@ -182,13 +171,27 @@ public class MainActivity extends AppCompatActivity {
         sw_id.setOnClickListener(v -> {
             if (sw_id.isChecked()) {
                 loadTheAAID();
-            } else tv_AAID.setText("Turn on the switch");
+            } else tv_AAID.setText("Don't worry about this for now");
+        });
+
+        sw_getData.setOnClickListener(v -> {
+            // do something
+        });
+
+        sw_readFile.setOnClickListener(v -> {
+            // do something
         });
 
         updateGPS();
-        // loading the AAID from the main onCreate is not a good idea
-
     }
+
+    // will need this later...
+//    private Runnable updateDataRunnable = new Runnable() {
+//        @Override
+//        public void run() {
+//
+//        }
+//    };
 
     private void loadTheAAID() {
         tv_AAID.setText("Getting the AD ID is awful");
@@ -216,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
         tv_magnetic.setText(R.string.tv_magnetic);
     }
 
-    // Turning off sensors and location tracking
+    // Turning off sensors and location tracking -- no longer needed but leaving it here
     private void stopLocationUpdates() {
         tv_lat.setText(R.string.tv_lat);
         tv_lon.setText(R.string.tv_lon);
@@ -268,7 +271,8 @@ public class MainActivity extends AppCompatActivity {
          if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
 
              // ##### MAYBE ADD MORE HERE ##### //
-             // Current location more likely to throw errors and is limited to
+             // Current location more likely to throw errors and is limited
+             // Maybe getting the last location is just fine for our purposes
 //             fusedLocationProviderClient.getCurrentLocation(priority int and CancellationToken).addOnSuccessListener(this,
 //                     new OnSuccessListener<Location>() {
 //                         @Override
@@ -276,7 +280,7 @@ public class MainActivity extends AppCompatActivity {
 //                             updateUIValue(location);
 //                         }
 //                     });
-             //location -> updateUIValue(location)); --> replaced
+
              fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                      this::updateUIValue);
          } else {
@@ -287,30 +291,50 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUIValue(@NotNull Location location) {
+        String speed;
+        String alt;
+        String addy;
+        String confidence = String.valueOf(location.getAccuracy());
+
         tv_lat.setText(String.valueOf(location.getLatitude()));
         tv_lon.setText(String.valueOf(location.getLongitude()));
-        tv_accuracy.setText(String.valueOf(location.getAccuracy()));
+        tv_accuracy.setText(confidence);
 
         // not every phone has the sensors of interest
         if (location.hasAltitude()) {
-            tv_altitude.setText(String.valueOf(location.getAltitude()));
-        } else tv_altitude.setText(R.string.tv_altitude);
+            alt = String.valueOf(location.getAltitude());
+            tv_altitude.setText(alt);
+        } else {
+            tv_altitude.setText(R.string.tv_altitude);
+            alt = "No altitude";
+        }
 
         // also a speed accuracy sensor to check out
         if (location.hasSpeed()) {
-            tv_speed.setText(String.valueOf(location.getSpeed()));
-        } else tv_speed.setText(R.string.tv_speed);
+            speed = String.valueOf(location.getSpeed());
+            tv_speed.setText(speed);
+        } else {
+            tv_speed.setText(R.string.tv_speed);
+            speed = "No speed";
+        }
 
         Geocoder geocoder = new Geocoder(MainActivity.this);
 
         try {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            // lots of value in this data
-            tv_address.setText(addresses.get(0).getAddressLine(0));
+            addy = addresses.get(0).getAddressLine(0);
+            tv_address.setText(addy);
 
         } catch (Exception e) {
             tv_address.setText(R.string.tv_address);
+            addy = "No address";
         }
+
+        String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
+        // a little ugly but it will do
+        if (initialize) {
+            storage = new StoreInfo(device_AID, cords, alt, speed, addy, confidence);
+        } else storage.updateData(cords, alt, speed, addy, confidence);
     }
 
 

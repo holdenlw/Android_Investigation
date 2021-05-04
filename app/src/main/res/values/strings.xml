@@ -64,4 +64,8 @@
     <string name="tv_AAID">AAID</string>
     <string name="tv_labelAID2">Android Device ID:</string>
     <string name="sw_id">Get Android Ad ID</string>
+    <string name="sw_getData">Show the Data</string>
+    <string name="sw_readFile">Read the File</string>
+    <string name="tv_notice">Don\'t turn this on for now</string>
+    <string name="tv_directions">**Use these buttons at the end**</string>
 </resources>

@@ -26,24 +26,34 @@ public class StoreInfo {
     private HashMap<String, ArrayList<String>> data;
     private final String id;
 
-    public StoreInfo(Context context, String id, String cords, String alt, String speed, String address, String accuracy) {
+    public StoreInfo(String id, String cords, String alt, String speed, String address, String accuracy) {
         // id = Android Device ID + time
         this.id = id + Calendar.getInstance().toString();
         this.data = new HashMap<>();
 
         // when obj is created give the current values
-        this.data.put("Coordinates", new ArrayList<>()).add(cords);
-        this.data.put("Altitude", new ArrayList<>()).add(alt);
-        this.data.put("Speed", new ArrayList<>()).add(speed);
-        this.data.put("Address", new ArrayList<>()).add(address);
-        this.data.put("Confidence", new ArrayList<>()).add(accuracy);
+        this.data.put("Coordinates", new ArrayList<>());
+        this.data.put("Altitude", new ArrayList<>());
+        this.data.put("Speed", new ArrayList<>());
+        this.data.put("Address", new ArrayList<>());
+        this.data.put("Confidence", new ArrayList<>());
 
+        updateData(cords, alt, speed, address, accuracy);
     }
 
     // cheating method
     public String getData() {
         return data.toString();
     }
+
+    public void updateData(String cords, String alt, String speed, String address, String accuracy) {
+        data.get("Coordinates").add(cords);
+        data.get("Altitude").add(alt);
+        data.get("Speed").add(speed);
+        data.get("Address").add(address);
+        data.get("Confidence").add(accuracy);
+    }
+
 
     // writing file and putting it into local storage
     public void writeFile(Context context) {
@@ -75,15 +85,6 @@ public class StoreInfo {
         }
         return stringBuilder.toString();
     }
-
-    public void updateData(String cords, String alt, String speed, String address, String accuracy) {
-        data.get("Coordinates").add(cords);
-        data.get("Altitude").add(alt);
-        data.get("Speed").add(speed);
-        data.get("Address").add(address);
-        data.get("Confidence").add(accuracy);
-    }
-
 
     /* I will not use this function for now, but it will be useful in the future */
     @RequiresApi(api = Build.VERSION_CODES.KITKAT)
