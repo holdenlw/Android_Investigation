@@ -22,28 +22,31 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class StoreInfo {
+    private static StoreInfo instance = null;
+    private HashMap<String, ArrayList<String>> data;
+    public String ID;
 
-    HashMap<String, ArrayList<String>> data;
-    private final String id;
-
-    public StoreInfo(String id, String cords, String alt, String speed, String address, String accuracy) {
-        // id = Android Device ID + time
-        this.id = id + Calendar.getInstance().toString();
-        this.data = new HashMap<>();
-
-        // when obj is created give the current values
-        this.data.put("Coordinates", new ArrayList<>());
-        this.data.put("Altitude", new ArrayList<>());
-        this.data.put("Speed", new ArrayList<>());
-        this.data.put("Address", new ArrayList<>());
-        this.data.put("Confidence", new ArrayList<>());
-
-        updateData(cords, alt, speed, address, accuracy);
+    private StoreInfo(String id) {
+        ID = id + Calendar.getInstance().toString();
+        data = new HashMap<>();
+        data.put("Coordinates", new ArrayList<>());
+        data.put("Altitude", new ArrayList<>());
+        data.put("Speed", new ArrayList<>());
+        data.put("Address", new ArrayList<>());
+        data.put("Confidence", new ArrayList<>());
     }
 
-    // cheating method
+    public static StoreInfo getStoreInfo(String id, String cords, String alt, String speed, String address, String accuracy) {
+        // id = Android Device ID + time
+        if (instance == null) {
+            instance = new StoreInfo(id);
+            instance.updateData(cords, alt, speed, address, accuracy);
+        }
+        return instance;
+    }
+
     public String getData() {
-        return data.toString();
+        return this.data.toString();
     }
 
     public void updateData(String cords, String alt, String speed, String address, String accuracy) {
@@ -58,8 +61,8 @@ public class StoreInfo {
     // writing file and putting it into local storage
     public void writeFile(Context context) {
         try  {
-            FileOutputStream fos = context.openFileOutput(id, Context.MODE_PRIVATE);
-            fos.write(data.toString().getBytes());
+            FileOutputStream fos = context.openFileOutput(this.ID, Context.MODE_PRIVATE);
+            fos.write(this.data.toString().getBytes());
         } catch (IOException e) {
             Toast.makeText(context, "Can't write file" ,Toast.LENGTH_SHORT).show();
         }
@@ -70,7 +73,7 @@ public class StoreInfo {
     public String readFile(Context context) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            FileInputStream fis = context.openFileInput(id + ".txt");
+            FileInputStream fis = context.openFileInput(this.ID + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
@@ -91,22 +94,22 @@ public class StoreInfo {
     public void updateFile(Context context)  {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            FileInputStream fis = context.openFileInput(id + ".txt");
+            FileInputStream fis = context.openFileInput(this.ID + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
             while (line != null) {
                 // going crazy with if statements
                 if (line.contains("Coordinates")) {
-                    stringBuilder.append(line).append(", ").append(data.get("Coordinates")).append('\n');
+                    stringBuilder.append(line).append(", ").append(this.data.get("Coordinates")).append('\n');
                 } else if (line.contains("Altitude")) {
-                    stringBuilder.append(line).append(", ").append(data.get("Altitude")).append('\n');
+                    stringBuilder.append(line).append(", ").append(this.data.get("Altitude")).append('\n');
                 } else if (line.contains("Speed")) {
-                    stringBuilder.append(line).append(", ").append(data.get("Speed")).append('\n');
+                    stringBuilder.append(line).append(", ").append(this.data.get("Speed")).append('\n');
                 } else if (line.contains("Address")) {
-                    stringBuilder.append(line).append(", ").append(data.get("Address")).append('\n');
+                    stringBuilder.append(line).append(", ").append(this.data.get("Address")).append('\n');
                 } else {
-                    stringBuilder.append(line).append(", ").append(data.get("Confidence")).append('\n');
+                    stringBuilder.append(line).append(", ").append(this.data.get("Confidence")).append('\n');
                 }
                 line = reader.readLine();
             }

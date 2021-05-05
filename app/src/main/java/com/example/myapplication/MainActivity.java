@@ -346,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
         // a little ugly but it will do
         if (storage == null) {
-            storage = new StoreInfo(device_AID, cords, alt, speed, addy, confidence);
+            storage = StoreInfo.getStoreInfo(device_AID, cords, alt, speed, addy, confidence);
         } else storage.updateData(cords, alt, speed, addy, confidence);
     }
 
