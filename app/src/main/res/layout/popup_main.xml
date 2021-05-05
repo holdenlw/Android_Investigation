@@ -11,13 +11,14 @@
         android:id="@+id/b_close"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/b_close"
+        android:text="x"
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
-        android:background="@null"
+        android:minHeight="0dp"
+        android:minWidth="0dp"
         />
     <TextView
-        android:id="@+id/tv"
+        android:id="@+id/tv_popup"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="This is a sample popup window."

@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
-            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID;
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_popup;
 
     String device_AID;
 
@@ -152,17 +152,6 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-//        sw_gps.setOnClickListener(v -> {
-//            if (sw_gps.isChecked()) {
-//                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-//                tv_sensor.setText("Using GPS");
-//            } else {
-//                locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
-//                tv_sensor.setText("Using Cell Towers + WiFi");
-//            }
-//        });
-
-       // don't remove this for now
         sw_locations.setOnClickListener(v -> {
             if (sw_locations.isChecked()) {
                 startLocationUpdates();
@@ -192,9 +181,14 @@ public class MainActivity extends AppCompatActivity {
 
             popupWindow.showAtLocation(parent_layout, Gravity.CENTER, 0, 0);
 
+            tv_popup = findViewById(R.id.tv_popup);
+            if (storage != null) {
+                tv_popup.setText(storage.getData());
+            }
+            tv_popup.setText("Storage is null :/");
+
             Button closeButton = popupView.findViewById(R.id.b_close);
             closeButton.setOnClickListener(v1 -> popupWindow.dismiss());
-
 
         });
 
