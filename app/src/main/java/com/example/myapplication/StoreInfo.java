@@ -22,9 +22,10 @@ import java.util.Calendar;
 import java.util.HashMap;
 
 public class StoreInfo {
-    private static StoreInfo instance = null;
+    private static StoreInfo instance;
+
     private HashMap<String, ArrayList<String>> data;
-    public String ID;
+    private String ID;
 
     private StoreInfo(String id) {
         ID = id + Calendar.getInstance().toString();
@@ -36,8 +37,7 @@ public class StoreInfo {
         data.put("Confidence", new ArrayList<>());
     }
 
-    public static StoreInfo getStoreInfo(String id, String cords, String alt, String speed, String address, String accuracy) {
-        // id = Android Device ID + time
+    public static StoreInfo getInstance(String id, String cords, String alt, String speed, String address, String accuracy) {
         if (instance == null) {
             instance = new StoreInfo(id);
             instance.updateData(cords, alt, speed, address, accuracy);
@@ -45,8 +45,10 @@ public class StoreInfo {
         return instance;
     }
 
+    public String getID() { return ID; }
+
     public String getData() {
-        return this.data.toString();
+        return data.toString();
     }
 
     public void updateData(String cords, String alt, String speed, String address, String accuracy) {
@@ -61,8 +63,8 @@ public class StoreInfo {
     // writing file and putting it into local storage
     public void writeFile(Context context) {
         try  {
-            FileOutputStream fos = context.openFileOutput(this.ID, Context.MODE_PRIVATE);
-            fos.write(this.data.toString().getBytes());
+            FileOutputStream fos = context.openFileOutput(ID, Context.MODE_PRIVATE);
+            fos.write(data.toString().getBytes());
         } catch (IOException e) {
             Toast.makeText(context, "Can't write file" ,Toast.LENGTH_SHORT).show();
         }
@@ -73,7 +75,7 @@ public class StoreInfo {
     public String readFile(Context context) {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            FileInputStream fis = context.openFileInput(this.ID + ".txt");
+            FileInputStream fis = context.openFileInput(ID + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();
@@ -94,7 +96,7 @@ public class StoreInfo {
     public void updateFile(Context context)  {
         StringBuilder stringBuilder = new StringBuilder();
         try {
-            FileInputStream fis = context.openFileInput(this.ID + ".txt");
+            FileInputStream fis = context.openFileInput(ID + ".txt");
             InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
             BufferedReader reader = new BufferedReader(inputStreamReader);
             String line = reader.readLine();

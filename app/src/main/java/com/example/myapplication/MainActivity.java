@@ -182,10 +182,21 @@ public class MainActivity extends AppCompatActivity {
             popupWindow.showAtLocation(parent_layout, Gravity.CENTER, 0, 0);
 
             tv_popup = findViewById(R.id.tv_popup);
-            if (storage != null) {
-                tv_popup.setText(storage.getData());
+            // Problem is here
+            tv_popup.setText("Testing");
+
+            if (storage == null) {
+                tv_popup.setText("Storage is null :/");
             }
-            tv_popup.setText("Storage is null :/");
+            String test = storage.getData();
+            if (test == null) {
+                tv_popup.setText("getData() is null :/");
+            }
+//            } else {
+//                //tv_popup.setText("Test is not null?");
+//            }
+
+
 
             Button closeButton = popupView.findViewById(R.id.b_close);
             closeButton.setOnClickListener(v1 -> popupWindow.dismiss());
@@ -344,9 +355,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
-        // a little ugly but it will do
+
         if (storage == null) {
-            storage = StoreInfo.getStoreInfo(device_AID, cords, alt, speed, addy, confidence);
+            storage = StoreInfo.getInstance(device_AID, cords, alt, speed, addy, confidence);
         } else storage.updateData(cords, alt, speed, addy, confidence);
     }
 
