@@ -68,4 +68,6 @@
     <string name="sw_readFile">Read the File</string>
     <string name="tv_notice">Don\'t turn this on for now</string>
     <string name="tv_directions">**Use these buttons at the end**</string>
+    <string name="b_close">X</string>
+    <string name="title_2">Sensors</string>
 </resources>

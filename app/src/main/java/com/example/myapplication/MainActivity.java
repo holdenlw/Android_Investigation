@@ -22,13 +22,20 @@ import com.google.android.gms.location.LocationServices;
 //import androidx.ads.identifier.AdvertisingIdClient;
 //import androidx.ads.identifier.AdvertisingIdInfo;
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.app.ActivityCompat;
 
 import android.provider.Settings;
 
+import android.view.Gravity;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -84,7 +91,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Storage
     StoreInfo storage;
-    Boolean initialize = true;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,7 +151,6 @@ public class MainActivity extends AppCompatActivity {
                 updateUIValue(locationResult.getLastLocation());
             }
         };
-        initialize = false;
 
 //        sw_gps.setOnClickListener(v -> {
 //            if (sw_gps.isChecked()) {
@@ -176,8 +181,21 @@ public class MainActivity extends AppCompatActivity {
             } else tv_AAID.setText("Don't worry about this for now");
         });
 
+        ConstraintLayout parent_layout = findViewById(R.id.cl_id);
         b_getData.setOnClickListener(v -> {
-            // do something
+            LayoutInflater inflater = (LayoutInflater)
+                    getSystemService(LAYOUT_INFLATER_SERVICE);
+            View popupView = inflater.inflate(R.layout.popup_main, null);
+            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
+            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
+            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+
+            popupWindow.showAtLocation(parent_layout, Gravity.CENTER, 0, 0);
+
+            Button closeButton = popupView.findViewById(R.id.b_close);
+            closeButton.setOnClickListener(v1 -> popupWindow.dismiss());
+
+
         });
 
         b_readFile.setOnClickListener(v -> {
@@ -208,7 +226,6 @@ public class MainActivity extends AppCompatActivity {
         tv_light.setText(lightSensor.getLight());
         tv_accelerator.setText(accelerationSensor.getAcceleration());
         tv_magnetic.setText(magneticSensor.getMagneticField());
-
     }
 
     private void turnOffSensors() {
@@ -334,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
         String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
         // a little ugly but it will do
-        if (initialize) {
+        if (storage == null) {
             storage = new StoreInfo(device_AID, cords, alt, speed, addy, confidence);
         } else storage.updateData(cords, alt, speed, addy, confidence);
     }

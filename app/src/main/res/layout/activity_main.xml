@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--  source: https://github.com/shadsluiter/gpsDemoStarting/blob/master/activity_main.xml-->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:id='@+id/cl_id'
     tools:context=".MainActivity">
+
 
     <TextView
         android:id="@+id/tv_labellat"
@@ -126,9 +129,9 @@
         android:id="@+id/divider"
         android:layout_width="409dp"
         android:layout_height="1dp"
-        android:layout_marginStart="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="20dp"
         android:background="?android:attr/listDivider"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/tv_labelaccel" />
@@ -148,31 +151,20 @@
         android:id="@+id/title_2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="24dp"
-        android:layout_marginLeft="24dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/environmental_sensors"
+        android:layout_marginStart="56dp"
+        android:layout_marginLeft="56dp"
+        android:layout_marginTop="20dp"
+        android:text="@string/title_2"
         app:layout_constraintStart_toStartOf="@+id/tv_address"
         app:layout_constraintTop_toBottomOf="@+id/tv_address" />
-
-    <TextView
-        android:id="@+id/title_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="128dp"
-        android:layout_marginLeft="128dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/motion_sensors"
-        app:layout_constraintStart_toStartOf="@+id/tv_labelproximity"
-        app:layout_constraintTop_toBottomOf="@+id/tv_labelproximity" />
 
     <TextView
         android:id="@+id/tv_labeltemp"
         android:layout_width="47dp"
         android:layout_height="19dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="16dp"
         android:text="@string/temp"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/title_2" />
@@ -208,9 +200,9 @@
         android:id="@+id/tv_labelpressure"
         android:layout_width="98dp"
         android:layout_height="18dp"
-        android:layout_marginStart="104dp"
-        android:layout_marginLeft="104dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:layout_marginTop="20dp"
         android:text="@string/air_pressure"
         app:layout_constraintStart_toStartOf="@+id/title_2"
         app:layout_constraintTop_toBottomOf="@+id/title_2" />
@@ -258,20 +250,21 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginBottom="16dp"
+        android:layout_marginTop="80dp"
         android:text="@string/j_0_00"
-        app:layout_constraintBottom_toTopOf="@+id/title_3"
-        app:layout_constraintStart_toEndOf="@+id/tv_labelproximity" />
+        app:layout_constraintStart_toEndOf="@+id/tv_labelproximity"
+        app:layout_constraintTop_toBottomOf="@+id/title_2" />
 
     <TextView
         android:id="@+id/tv_labelaccel"
         android:layout_width="95dp"
         android:layout_height="20dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="12dp"
         android:text="@string/acceleration"
-        app:layout_constraintStart_toStartOf="@+id/tv_labelproximity"
-        app:layout_constraintTop_toBottomOf="@+id/title_3"
-        tools:layout_editor_absoluteX="6dp" />
+        app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
+        app:layout_constraintTop_toBottomOf="@+id/tv_labelproximity" />
 
     <TextView
         android:id="@+id/tv_accelerator"
@@ -285,12 +278,12 @@
         android:id="@+id/tv_lablemag"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="68dp"
-        android:layout_marginLeft="68dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginStart="72dp"
+        android:layout_marginLeft="72dp"
+        android:layout_marginTop="112dp"
         android:text="@string/magnetic_field"
-        app:layout_constraintStart_toStartOf="@+id/title_3"
-        app:layout_constraintTop_toBottomOf="@+id/title_3" />
+        app:layout_constraintStart_toStartOf="@+id/title_2"
+        app:layout_constraintTop_toBottomOf="@+id/title_2" />
 
     <TextView
         android:id="@+id/tv_magnetic"
@@ -298,10 +291,10 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="4dp"
         android:layout_marginLeft="4dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="112dp"
         android:text="@string/l_0_00"
         app:layout_constraintStart_toEndOf="@+id/tv_lablemag"
-        app:layout_constraintTop_toBottomOf="@+id/title_3" />
+        app:layout_constraintTop_toBottomOf="@+id/title_2" />
 
     <TextView
         android:id="@+id/tv_labelAID"
@@ -359,37 +352,37 @@
         app:layout_constraintStart_toEndOf="@+id/tv_labelAAID"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
+
     <androidx.appcompat.widget.SwitchCompat
         android:id="@+id/sw_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="136dp"
+        android:layout_marginStart="228dp"
+        android:layout_marginLeft="228dp"
+        android:layout_marginTop="92dp"
         android:checked="false"
         android:text="@string/sw_id"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/divider" />
 
-
     <TextView
         android:id="@+id/tv_directions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="88dp"
-        android:layout_marginLeft="88dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginStart="76dp"
+        android:layout_marginLeft="76dp"
+        android:layout_marginTop="12dp"
         android:text="@string/tv_directions"
-        app:layout_constraintStart_toStartOf="@+id/sw_id"
+        app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
         app:layout_constraintTop_toBottomOf="@+id/sw_id" />
 
     <Button
         android:id="@+id/b_getData"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="32dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginTop="212dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="184dp"
         android:checked="false"
         android:text="@string/sw_getData"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"
@@ -399,9 +392,9 @@
         android:id="@+id/b_readFile"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="240dp"
-        android:layout_marginLeft="240dp"
-        android:layout_marginTop="212dp"
+        android:layout_marginStart="236dp"
+        android:layout_marginLeft="236dp"
+        android:layout_marginTop="184dp"
         android:checked="false"
         android:text="@string/sw_readFile"
         app:layout_constraintStart_toStartOf="@+id/tv_lbladdress"

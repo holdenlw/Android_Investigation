@@ -23,7 +23,7 @@ import java.util.HashMap;
 
 public class StoreInfo {
 
-    private HashMap<String, ArrayList<String>> data;
+    HashMap<String, ArrayList<String>> data;
     private final String id;
 
     public StoreInfo(String id, String cords, String alt, String speed, String address, String accuracy) {
