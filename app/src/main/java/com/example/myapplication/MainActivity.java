@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
     // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
-            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_popup;
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_data;
 
     String device_AID;
 
@@ -68,16 +68,17 @@ public class MainActivity extends AppCompatActivity {
 //    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
     // Switches and buttons are for testing purposes
-    SwitchCompat sw_sensors, sw_locations, sw_id;
-    Button b_getData, b_readFile;
+
+    Button b_readFile;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
+
     // tracking location
 //    boolean updateOn = false;
+
     // for config
     LocationRequest locationRequest;
-
     LocationCallback locationCallback;
 
     // Sensors
@@ -112,13 +113,6 @@ public class MainActivity extends AppCompatActivity {
         tv_magnetic = findViewById(R.id.tv_magnetic);
         tv_AAID = findViewById(R.id.tv_AAID);
 
-        // I learned about the "checked" feature of xml... makes the collection automatic
-        sw_locations = findViewById(R.id.sw_locationsupdates);
-        sw_sensors = findViewById(R.id.sw_sensors);
-        sw_id = findViewById(R.id.sw_id);
-
-        // switches for testing storage
-        b_getData = findViewById(R.id.b_getData);
         b_readFile = findViewById(R.id.b_readFile);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
@@ -127,6 +121,7 @@ public class MainActivity extends AppCompatActivity {
         // studio is telling me using "getString" to get Android ID is not recommended
         device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         tv_AID.setText(device_AID);
+        loadTheAAID();
 
         // sensors
         tempSensor = new HelperSensorTemp();
@@ -152,54 +147,52 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sw_locations.setOnClickListener(v -> {
-            if (sw_locations.isChecked()) {
+
+        SwitchCompat locationSwitch = (SwitchCompat) findViewById(R.id.sw_locationsupdates);
+        locationSwitch.setOnClickListener(v -> {
+            if (locationSwitch.isChecked()) {
                 startLocationUpdates();
-            } else stopLocationUpdates();
+                return;
+            }
+
+            stopLocationUpdates();
         });
 
-        sw_sensors.setOnClickListener(v -> {
-            if (sw_sensors.isChecked()) {
+        SwitchCompat sensorSwitch = (SwitchCompat) findViewById(R.id.sw_sensors);
+        sensorSwitch.setOnClickListener(v -> {
+            if (sensorSwitch.isChecked()) {
                 updateSensors();
-            } else turnOffSensors();
+                return;
+            }
+
+            turnOffSensors();
         });
 
-        sw_id.setOnClickListener(v -> {
-            if (sw_id.isChecked()) {
-                loadTheAAID();
-            } else tv_AAID.setText("Don't worry about this for now");
-        });
 
-        ConstraintLayout parent_layout = findViewById(R.id.cl_id);
-        b_getData.setOnClickListener(v -> {
-            LayoutInflater inflater = (LayoutInflater)
-                    getSystemService(LAYOUT_INFLATER_SERVICE);
-            View popupView = inflater.inflate(R.layout.popup_main, null);
-            int width = LinearLayout.LayoutParams.WRAP_CONTENT;
-            int height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            final PopupWindow popupWindow = new PopupWindow(popupView, width, height, true);
+        Button loadButton = (Button)findViewById(R.id.b_loadData);
 
-            popupWindow.showAtLocation(parent_layout, Gravity.CENTER, 0, 0);
+        loadButton.setOnClickListener(v -> {
+            tv_data = findViewById(R.id.tv_data);
 
-            tv_popup = findViewById(R.id.tv_popup);
-            // Problem is here
-            tv_popup.setText("Testing");
+            // example: the data field can contain a lot of content
+//            tv_data.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget est lorem ipsum dolor sit amet. Orci porta non pulvinar neque laoreet suspendisse. Cursus euismod quis viverra nibh cras pulvinar. Aliquam faucibus purus in massa tempor nec feugiat nisl pretium. Nibh praesent tristique magna sit amet. Vivamus arcu felis bibendum ut tristique et egestas quis. Neque viverra justo nec ultrices dui. Adipiscing elit ut aliquam purus sit amet luctus. Nisi quis eleifend quam adipiscing vitae proin. Mauris vitae ultricies leo integer malesuada nunc. Curabitur vitae nunc sed velit dignissim sodales ut eu. Egestas purus viverra accumsan in. Tellus cras adipiscing enim eu turpis egestas.\n" +
+//                    "\n" +
+//                    "Neque vitae tempus quam pellentesque nec nam aliquam. Ut tristique et egestas quis. Fermentum posuere urna nec tincidunt. Nulla pharetra diam sit amet nisl. Egestas pretium aenean pharetra magna ac. Cras ornare arcu dui vivamus arcu felis bibendum ut tristique. Massa vitae tortor condimentum lacinia quis. Nulla aliquet enim tortor at auctor. Lacus suspendisse faucibus interdum posuere. Cras sed felis eget velit aliquet sagittis. Massa eget egestas purus viverra accumsan. Id eu nisl nunc mi ipsum faucibus. At tempor commodo ullamcorper a lacus vestibulum sed arcu. Sit amet est placerat in egestas erat. Nibh sed pulvinar proin gravida hendrerit lectus a. Dui ut ornare lectus sit amet est. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Ac ut consequat semper viverra nam libero justo laoreet sit.\n" +
+//                    "\n");
 
             if (storage == null) {
-                tv_popup.setText("Storage is null :/");
+                tv_data.setText("Storage is null :/");
+                return;
             }
+
             String test = storage.getData();
+
             if (test == null) {
-                tv_popup.setText("getData() is null :/");
+                tv_data.setText("getData() is null :/");
+                return;
             }
-//            } else {
-//                //tv_popup.setText("Test is not null?");
-//            }
 
-
-
-            Button closeButton = popupView.findViewById(R.id.b_close);
-            closeButton.setOnClickListener(v1 -> popupWindow.dismiss());
+            tv_data.setText(test);
 
         });
 
