@@ -48,6 +48,8 @@ public class StoreInfo {
     public String getID() { return ID; }
 
     public String getData() {
+        // TODO
+        //  make this more readable
         return data.toString();
     }
 

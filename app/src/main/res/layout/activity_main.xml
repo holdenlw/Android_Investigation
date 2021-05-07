@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--  source: https://github.com/shadsluiter/gpsDemoStarting/blob/master/activity_main.xml-->
 <ScrollView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
@@ -193,32 +192,22 @@
             android:text="@string/tv_AAID" />
     </TableRow>
 
-    <TableRow android:paddingTop="16dp">
-        <TextView
-            android:textAppearance="@style/TextAppearance.AppCompat.Headline"
-            android:id="@+id/title_data"
-            android:text="@string/title_data" />
-
-        <Button
-            android:id="@+id/b_loadData"
-            android:checked="false"
-            android:text="@string/loadData" />
-    </TableRow>
 
     <TableRow>
-        <TextView
-            android:id="@+id/tv_data"
-            android:text="@string/tv_emptyData"
-            android:layout_span="2" />
-    </TableRow>
-
-    <TableRow
-        android:paddingTop="16dp">
         <Button
             android:id="@+id/b_readFile"
             android:checked="false"
             android:text="@string/sw_readFile"
             android:layout_span="2" />
     </TableRow>
+
+        <TableRow>
+            <TextView
+                android:id="@+id/tv_data"
+                android:text=""
+                />
+        </TableRow>
+
+
     </TableLayout>
 </ScrollView>

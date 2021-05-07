@@ -67,8 +67,7 @@ public class MainActivity extends AppCompatActivity {
 //    String providerPackage;
 //    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
-    // Switches and buttons are for testing purposes
-
+    // as a global var this doesn't break...
     Button b_readFile;
 
     // The heart and soul of this app
@@ -112,8 +111,6 @@ public class MainActivity extends AppCompatActivity {
         tv_accelerator = findViewById(R.id.tv_accelerator);
         tv_magnetic = findViewById(R.id.tv_magnetic);
         tv_AAID = findViewById(R.id.tv_AAID);
-
-        b_readFile = findViewById(R.id.b_readFile);
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
@@ -168,18 +165,10 @@ public class MainActivity extends AppCompatActivity {
             turnOffSensors();
         });
 
+        b_readFile = findViewById(R.id.b_readFile);
+        tv_data = findViewById(R.id.tv_data);
 
-        Button loadButton = (Button)findViewById(R.id.b_loadData);
-
-        loadButton.setOnClickListener(v -> {
-            tv_data = findViewById(R.id.tv_data);
-
-            // example: the data field can contain a lot of content
-//            tv_data.setText("Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Eget est lorem ipsum dolor sit amet. Orci porta non pulvinar neque laoreet suspendisse. Cursus euismod quis viverra nibh cras pulvinar. Aliquam faucibus purus in massa tempor nec feugiat nisl pretium. Nibh praesent tristique magna sit amet. Vivamus arcu felis bibendum ut tristique et egestas quis. Neque viverra justo nec ultrices dui. Adipiscing elit ut aliquam purus sit amet luctus. Nisi quis eleifend quam adipiscing vitae proin. Mauris vitae ultricies leo integer malesuada nunc. Curabitur vitae nunc sed velit dignissim sodales ut eu. Egestas purus viverra accumsan in. Tellus cras adipiscing enim eu turpis egestas.\n" +
-//                    "\n" +
-//                    "Neque vitae tempus quam pellentesque nec nam aliquam. Ut tristique et egestas quis. Fermentum posuere urna nec tincidunt. Nulla pharetra diam sit amet nisl. Egestas pretium aenean pharetra magna ac. Cras ornare arcu dui vivamus arcu felis bibendum ut tristique. Massa vitae tortor condimentum lacinia quis. Nulla aliquet enim tortor at auctor. Lacus suspendisse faucibus interdum posuere. Cras sed felis eget velit aliquet sagittis. Massa eget egestas purus viverra accumsan. Id eu nisl nunc mi ipsum faucibus. At tempor commodo ullamcorper a lacus vestibulum sed arcu. Sit amet est placerat in egestas erat. Nibh sed pulvinar proin gravida hendrerit lectus a. Dui ut ornare lectus sit amet est. Eleifend donec pretium vulputate sapien nec sagittis aliquam malesuada bibendum. Ac ut consequat semper viverra nam libero justo laoreet sit.\n" +
-//                    "\n");
-
+        b_readFile.setOnClickListener(v -> {
             if (storage == null) {
                 tv_data.setText("Storage is null :/");
                 return;
@@ -193,11 +182,6 @@ public class MainActivity extends AppCompatActivity {
             }
 
             tv_data.setText(test);
-
-        });
-
-        b_readFile.setOnClickListener(v -> {
-            // do something
         });
 
         updateGPS();
