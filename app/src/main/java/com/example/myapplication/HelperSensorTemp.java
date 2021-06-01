@@ -9,34 +9,33 @@ import android.hardware.SensorManager;
 
 import androidx.annotation.CallSuper;
 
-public class HelperSensorTemp extends Application implements SensorEventListener {
+public class HelperSensorTemp implements SensorEventListener {
     private Sensor tempSensor;
     private float tempValues;
     private SensorManager sensorManager;
 //    private boolean working; makeshift debugging process for sensors
+    private static HelperSensorTemp instance;
 
-    @CallSuper
-    public void onCreate() {
-        super.onCreate();
-        // sensorManger recommended to be a local object but that also is advised against!
-
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    private HelperSensorTemp(Context context) {
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_FASTEST);
-//        if (tempSensor != null) {
-//            working = true;
-//        } else {
-//            working = false;
-//        }
+
+    }
+
+    public static HelperSensorTemp getInstance(Context context) {
+        if (instance == null) {
+            instance = new HelperSensorTemp(context);
+        }
+        return instance;
+    }
 
 // Just going to assume there is a sensor
 //        if (sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE) != null) {
 //            tempSensor = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
 //            sensorManager.registerListener(this, tempSensor, SensorManager.SENSOR_DELAY_FASTEST);
 //        } else tempSensor = null;
-
-    }
-
+// }
     @Override
     public void onSensorChanged(@org.jetbrains.annotations.NotNull SensorEvent event) {
         tempValues = event.values[0];

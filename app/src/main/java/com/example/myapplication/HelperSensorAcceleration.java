@@ -11,20 +11,25 @@ import androidx.annotation.CallSuper;
 
 import java.util.Arrays;
 
-public class HelperSensorAcceleration extends Application implements SensorEventListener {
+public class HelperSensorAcceleration implements SensorEventListener {
     private Sensor accelSensor;
     private float[] accelValues;
     private SensorManager sensorManager;
 
-    @CallSuper
-    public void onCreate() {
-        super.onCreate();
-        // sensorManger recommended to be a local object but that also is advised against!
+    private static HelperSensorAcceleration instance;
 
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+    private HelperSensorAcceleration(Context context) {
+        sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
         accelSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         sensorManager.registerListener(this, accelSensor, SensorManager.SENSOR_DELAY_FASTEST);
 
+    }
+
+    public static HelperSensorAcceleration getInstance(Context context) {
+        if (instance == null) {
+            instance = new HelperSensorAcceleration(context);
+        }
+        return instance;
     }
 
     @Override

@@ -1,7 +1,12 @@
 package com.example.myapplication;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.pm.PackageManager;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
@@ -81,16 +86,27 @@ public class MainActivity extends AppCompatActivity {
     LocationCallback locationCallback;
 
     // Sensors
-    HelperSensorTemp tempSensor;
-    HelperSensorHumidity humiditySensor;
-    HelperSensorPressure pressureSensor;
-    HelperSensorProximity proximitySensor;
-    HelperSensorLight lightSensor;
-    HelperSensorAcceleration accelerationSensor;
-    HelperSensorMagnetic magneticSensor;
+//    HelperSensorTemp tempSensor;
+//    HelperSensorHumidity humiditySensor;
+//    HelperSensorPressure pressureSensor;
+//    HelperSensorProximity proximitySensor;
+//    HelperSensorLight lightSensor;
+//    HelperSensorAcceleration accelerationSensor;
+//    HelperSensorMagnetic magneticSensor;
 
     // Storage
     StoreInfo storage;
+
+    // Sensors
+    SensorManager sensorManager;
+    SensorEventListener sensorEventListener;
+    Sensor sensorTemp;
+    Sensor sensorHumidity;
+    Sensor sensorPressure;
+    Sensor sensorProximity;
+    Sensor sensorLight;
+    Sensor sensorAcceleration;
+    Sensor sensorMagnetic;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,13 +137,74 @@ public class MainActivity extends AppCompatActivity {
         loadTheAAID();
 
         // sensors
-        tempSensor = new HelperSensorTemp();
-        humiditySensor = new HelperSensorHumidity();
-        pressureSensor = new HelperSensorPressure();
-        proximitySensor = new HelperSensorProximity();
-        lightSensor = new HelperSensorLight();
-        accelerationSensor = new HelperSensorAcceleration();
-        magneticSensor = new HelperSensorMagnetic();
+        //tempSensor = new HelperSensorTemp();
+        //humiditySensor = new HelperSensorHumidity();
+        //pressureSensor = new HelperSensorPressure();
+        //proximitySensor = new HelperSensorProximity();
+        //lightSensor = new HelperSensorLight();
+        //accelerationSensor = new HelperSensorAcceleration();
+        //magneticSensor = new HelperSensorMagnetic();
+
+        sensorManager = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
+        sensorTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+        sensorHumidity = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        sensorPressure  = sensorManager.getDefaultSensor(Sensor.TYPE_PRESSURE);
+        sensorProximity = sensorManager.getDefaultSensor(Sensor.TYPE_PROXIMITY);
+        sensorLight = sensorManager.getDefaultSensor(Sensor.TYPE_LIGHT);
+        sensorAcceleration = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        sensorMagnetic = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+
+        sensorEventListener = new SensorEventListener() {
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                switch (event.sensor.getType()) {
+                    case Sensor.TYPE_AMBIENT_TEMPERATURE :
+                        String tempValues = event.values[0] + "°C";
+                        tv_temp.setText(tempValues);
+                        break;
+                    case Sensor.TYPE_RELATIVE_HUMIDITY :
+                        String humidityValue = event.values[0] + "%";
+                        tv_humidity.setText(humidityValue);
+                        break;
+                    case Sensor.TYPE_PRESSURE :
+                        String pressureValue = event.values[0] + "hPa";
+                        tv_pressure.setText(pressureValue);
+                        break;
+                    case Sensor.TYPE_PROXIMITY :
+                        String proximityValue =  event.values[0] + "cm";
+                        tv_proximity.setText(proximityValue);
+                        break;
+                    case Sensor.TYPE_LIGHT :
+                        String lightValue =  event.values[0] + "SI lux";
+                        tv_light.setText(lightValue);
+                        break;
+                    case Sensor.TYPE_ACCELEROMETER :
+                        String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
+                        tv_accelerator.setText(aclValue);
+                        break;
+                    case Sensor.TYPE_MAGNETIC_FIELD :
+                        String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
+                        tv_magnetic.setText(magneticValue);
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {
+                // place holder
+            }
+        };
+
+        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
 
         // set properties of request
         locationRequest = LocationRequest.create();
@@ -158,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         SwitchCompat sensorSwitch = (SwitchCompat) findViewById(R.id.sw_sensors);
         sensorSwitch.setOnClickListener(v -> {
             if (sensorSwitch.isChecked()) {
-                updateSensors();
+//                updateSensors();
                 return;
             }
 
@@ -199,16 +276,7 @@ public class MainActivity extends AppCompatActivity {
         tv_AAID.setText("Getting the AD ID is awful");
     }
 
-    private void updateSensors() {
-        // use getWorking() for testing
-        tv_temp.setText(tempSensor.getTempValues());
-        tv_humidity.setText(humiditySensor.getRelativeHumidity());
-        tv_pressure.setText(pressureSensor.getPressure());
-        tv_proximity.setText(proximitySensor.getProximity());
-        tv_light.setText(lightSensor.getLight());
-        tv_accelerator.setText(accelerationSensor.getAcceleration());
-        tv_magnetic.setText(magneticSensor.getMagneticField());
-    }
+
 
     private void turnOffSensors() {
         tv_temp.setText(R.string.tv_temp);
