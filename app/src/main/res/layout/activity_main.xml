@@ -201,13 +201,15 @@
             android:layout_span="2" />
     </TableRow>
 
-        <TableRow>
-            <TextView
-                android:id="@+id/tv_data"
-                android:text=""
-                />
-        </TableRow>
-
+        <TextView
+            android:id="@+id/tv_data"
+            android:text=""
+            />
+        <TextView
+            android:id="@+id/tv_data_s"
+            android:text=""
+            />
 
     </TableLayout>
+
 </ScrollView>

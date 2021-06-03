@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity {
     // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
-            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_data;
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_data, tv_data_s;
 
     String device_AID;
 
@@ -87,6 +87,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Storage
     StoreInfo storage;
+    StoreSensorInfo sensorStorage;
 
     // Sensors
     SensorManager sensorManager;
@@ -141,34 +142,45 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onSensorChanged(SensorEvent event) {
+                // initialization of the singleton
+                if (sensorStorage == null) {
+                    sensorStorage = StoreSensorInfo.getInstance(device_AID);
+                }
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_AMBIENT_TEMPERATURE :
-                        String tempValues = event.values[0] + "°C";
-                        tv_temp.setText(tempValues);
+                        String tempValue = event.values[0] + " °C";
+                        tv_temp.setText(tempValue);
+                        sensorStorage.updateData("temp", tempValue);
                         break;
                     case Sensor.TYPE_RELATIVE_HUMIDITY :
                         String humidityValue = event.values[0] + "%";
                         tv_humidity.setText(humidityValue);
+                        sensorStorage.updateData("humid", humidityValue);
                         break;
                     case Sensor.TYPE_PRESSURE :
-                        String pressureValue = event.values[0] + "hPa";
+                        String pressureValue = event.values[0] + " hPa";
                         tv_pressure.setText(pressureValue);
+                        sensorStorage.updateData("pres", pressureValue);
                         break;
                     case Sensor.TYPE_PROXIMITY :
-                        String proximityValue =  event.values[0] + "cm";
+                        String proximityValue =  event.values[0] + " cm";
                         tv_proximity.setText(proximityValue);
+                        sensorStorage.updateData("prox", proximityValue);
                         break;
                     case Sensor.TYPE_LIGHT :
-                        String lightValue =  event.values[0] + "SI lux";
+                        String lightValue =  event.values[0] + " SI lux";
                         tv_light.setText(lightValue);
+                        sensorStorage.updateData("light", lightValue);
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_accelerator.setText(aclValue);
+                        sensorStorage.updateData("acl", aclValue);
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_magnetic.setText(magneticValue);
+                        sensorStorage.updateData("mag", magneticValue);
                         break;
                     default:
                         break;
@@ -177,17 +189,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onAccuracyChanged(Sensor sensor, int accuracy) {
-                // place holder
+                // place holder - don't think this is interesting atm
             }
         };
 
-        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_NORMAL);
 
         // set properties of request
         locationRequest = LocationRequest.create();
@@ -219,6 +231,7 @@ public class MainActivity extends AppCompatActivity {
 
         b_readFile = findViewById(R.id.b_readFile);
         tv_data = findViewById(R.id.tv_data);
+        tv_data_s = findViewById(R.id.tv_data_s);
 
         b_readFile.setOnClickListener(v -> {
             if (storage == null) {
@@ -234,6 +247,20 @@ public class MainActivity extends AppCompatActivity {
             }
 
             tv_data.setText(test);
+
+            if (sensorStorage == null) {
+                tv_data_s.setText("Sensor Storage is Null");
+                return;
+            }
+
+            String test2 = sensorStorage.getData();
+
+            if (test2 == null) {
+                tv_data_s.setText("can't get data");
+                return;
+            }
+
+            tv_data_s.setText(test2);
         });
 
         updateGPS();

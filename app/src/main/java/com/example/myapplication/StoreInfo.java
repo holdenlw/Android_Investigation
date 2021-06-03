@@ -50,15 +50,16 @@ public class StoreInfo {
     public String getID() { return ID; }
 
     public String getData() {
-        // TODO
-        //  make this more readable
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("Location Data: ").append('\n');
+        stringBuilder.append("              Location Data               ").append('\n');
         for (Map.Entry<String, ArrayList<String>> entry : data.entrySet()) {
             stringBuilder.append(entry.getKey()).append(": ");
             ArrayList<String> list = entry.getValue();
             for (String s : list) {
-                // this will add an extra comma but I will come back to this
+                if (list.indexOf(s) == list.size() - 1) {
+                    stringBuilder.append(s);
+                    break;
+                }
                 stringBuilder.append(s).append(", ");
             }
             stringBuilder.append('\n');
