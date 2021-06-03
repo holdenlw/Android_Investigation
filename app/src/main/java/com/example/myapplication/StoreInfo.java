@@ -20,6 +20,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class StoreInfo {
     private static StoreInfo instance;
@@ -50,7 +52,18 @@ public class StoreInfo {
     public String getData() {
         // TODO
         //  make this more readable
-        return data.toString();
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("Location Data: ").append('\n');
+        for (Map.Entry<String, ArrayList<String>> entry : data.entrySet()) {
+            stringBuilder.append(entry.getKey()).append(": ");
+            ArrayList<String> list = entry.getValue();
+            for (String s : list) {
+                // this will add an extra comma but I will come back to this
+                stringBuilder.append(s).append(", ");
+            }
+            stringBuilder.append('\n');
+        }
+        return stringBuilder.toString();
     }
 
     public void updateData(String cords, String alt, String speed, String address, String accuracy) {

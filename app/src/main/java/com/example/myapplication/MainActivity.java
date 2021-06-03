@@ -204,25 +204,17 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-
+        // TODO
+        // Probably want to remove this as well and replace it with a non-UI function
+        // There is no need to turn off location tracking from the UI so it might be best
+        // only to remove the stopLocationUpdates()
         SwitchCompat locationSwitch = (SwitchCompat) findViewById(R.id.sw_locationsupdates);
         locationSwitch.setOnClickListener(v -> {
             if (locationSwitch.isChecked()) {
                 startLocationUpdates();
                 return;
             }
-
             stopLocationUpdates();
-        });
-
-        SwitchCompat sensorSwitch = (SwitchCompat) findViewById(R.id.sw_sensors);
-        sensorSwitch.setOnClickListener(v -> {
-            if (sensorSwitch.isChecked()) {
-//                updateSensors();
-                return;
-            }
-
-            turnOffSensors();
         });
 
         b_readFile = findViewById(R.id.b_readFile);
@@ -230,14 +222,14 @@ public class MainActivity extends AppCompatActivity {
 
         b_readFile.setOnClickListener(v -> {
             if (storage == null) {
-                tv_data.setText("Storage is null :/");
+                tv_data.setText("Storage is null :(");
                 return;
             }
 
             String test = storage.getData();
 
             if (test == null) {
-                tv_data.setText("getData() is null :/");
+                tv_data.setText("getData() is null :(");
                 return;
             }
 
@@ -247,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         updateGPS();
     }
 
-    // will need this later...
+    // might need this later for AAID...
 //    private Runnable updateDataRunnable = new Runnable() {
 //        @Override
 //        public void run() {
@@ -256,20 +248,9 @@ public class MainActivity extends AppCompatActivity {
 //    };
 
     private void loadTheAAID() {
-        tv_AAID.setText("Getting the AD ID is awful");
+        tv_AAID.setText("Need SDKs to get AAID");
     }
 
-
-
-    private void turnOffSensors() {
-        tv_temp.setText(R.string.tv_temp);
-        tv_light.setText(R.string.tv_light);
-        tv_pressure.setText(R.string.tv_pressure);
-        tv_humidity.setText(R.string.tv_humidity);
-        tv_proximity.setText(R.string.tv_proximity);
-        tv_accelerator.setText(R.string.tv_accelerator);
-        tv_magnetic.setText(R.string.tv_magnetic);
-    }
 
     // Turning off sensors and location tracking -- no longer needed but leaving it here
     private void stopLocationUpdates() {
@@ -388,6 +369,5 @@ public class MainActivity extends AppCompatActivity {
             storage = StoreInfo.getInstance(device_AID, cords, alt, speed, addy, confidence);
         } else storage.updateData(cords, alt, speed, addy, confidence);
     }
-
 
 }
