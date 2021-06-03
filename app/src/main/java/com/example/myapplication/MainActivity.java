@@ -85,15 +85,6 @@ public class MainActivity extends AppCompatActivity {
     LocationRequest locationRequest;
     LocationCallback locationCallback;
 
-    // Sensors
-//    HelperSensorTemp tempSensor;
-//    HelperSensorHumidity humiditySensor;
-//    HelperSensorPressure pressureSensor;
-//    HelperSensorProximity proximitySensor;
-//    HelperSensorLight lightSensor;
-//    HelperSensorAcceleration accelerationSensor;
-//    HelperSensorMagnetic magneticSensor;
-
     // Storage
     StoreInfo storage;
 
@@ -136,15 +127,7 @@ public class MainActivity extends AppCompatActivity {
         tv_AID.setText(device_AID);
         loadTheAAID();
 
-        // sensors
-        //tempSensor = new HelperSensorTemp();
-        //humiditySensor = new HelperSensorHumidity();
-        //pressureSensor = new HelperSensorPressure();
-        //proximitySensor = new HelperSensorProximity();
-        //lightSensor = new HelperSensorLight();
-        //accelerationSensor = new HelperSensorAcceleration();
-        //magneticSensor = new HelperSensorMagnetic();
-
+        // Sensors
         sensorManager = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
         sensorTemp = sensorManager.getDefaultSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
         sensorHumidity = sensorManager.getDefaultSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
