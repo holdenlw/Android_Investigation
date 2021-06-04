@@ -51,37 +51,13 @@ public class StoreSensorInfo {
         return stringBuilder.toString();
     }
 
-    // you can only get information when the sensor changes
+    // excluding linear acceleration and magnetic field for now
     public void updateData(String changed, String value) {
-        switch (changed) {
-            case "temp" :
-                data.get("Ambient Temperature").add(value);
-                break;
-            case "humid" :
-                data.get("Relative Humidity").add(value);
-                break;
-            case "light" :
-                data.get("Light").add(value);
-                break;
-            case "pres" :
-                data.get("Pressure").add(value);
-                break;
-            case "prox" :
-                data.get("Proximity").add(value);
-                break;
-            case "acl" :
-                data.get("Linear Acceleration").add(value);
-                break;
-            case "mag" :
-                data.get("Magnetic Field").add(value);
-                break;
-            default:
-                break;
+        // checking for duplicates
+        if (data.get(changed).get(data.get(changed).size()-1).equals(value)) {
+            return;
         }
-    }
-    // sensors seem to be crazy on updating so might need to add this function
-    private Boolean checkForValueChange(String key, String value) {
-        return false;
+        data.get(changed).add(value);
     }
 
 }

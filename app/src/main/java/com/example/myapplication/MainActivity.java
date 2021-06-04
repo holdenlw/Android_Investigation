@@ -150,37 +150,37 @@ public class MainActivity extends AppCompatActivity {
                     case Sensor.TYPE_AMBIENT_TEMPERATURE :
                         String tempValue = event.values[0] + " °C";
                         tv_temp.setText(tempValue);
-                        sensorStorage.updateData("temp", tempValue);
+                        sensorStorage.updateData("Ambient Temperature", tempValue);
                         break;
                     case Sensor.TYPE_RELATIVE_HUMIDITY :
                         String humidityValue = event.values[0] + "%";
                         tv_humidity.setText(humidityValue);
-                        sensorStorage.updateData("humid", humidityValue);
+                        sensorStorage.updateData("Relative Humidity", humidityValue);
                         break;
                     case Sensor.TYPE_PRESSURE :
                         String pressureValue = event.values[0] + " hPa";
                         tv_pressure.setText(pressureValue);
-                        sensorStorage.updateData("pres", pressureValue);
+                        sensorStorage.updateData("Pressure", pressureValue);
                         break;
                     case Sensor.TYPE_PROXIMITY :
                         String proximityValue =  event.values[0] + " cm";
                         tv_proximity.setText(proximityValue);
-                        sensorStorage.updateData("prox", proximityValue);
+                        sensorStorage.updateData("Proximity", proximityValue);
                         break;
                     case Sensor.TYPE_LIGHT :
                         String lightValue =  event.values[0] + " SI lux";
                         tv_light.setText(lightValue);
-                        sensorStorage.updateData("light", lightValue);
+                        sensorStorage.updateData("Light", lightValue);
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_accelerator.setText(aclValue);
-                        sensorStorage.updateData("acl", aclValue);
+                        sensorStorage.updateData("Linear Acceleration", aclValue);
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_magnetic.setText(magneticValue);
-                        sensorStorage.updateData("mag", magneticValue);
+                        sensorStorage.updateData("Magnetic Field", magneticValue);
                         break;
                     default:
                         break;
@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity {
         };
 
         sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_FASTEST);
         sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
 
         // set properties of request
         locationRequest = LocationRequest.create();
