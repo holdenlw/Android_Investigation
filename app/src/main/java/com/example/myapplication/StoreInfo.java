@@ -30,7 +30,7 @@ public class StoreInfo {
     private String ID;
 
     private StoreInfo(String id) {
-        ID = id + Calendar.getInstance().toString();
+        ID = id + " at " + Calendar.getInstance().getTime();
         data = new HashMap<>();
         data.put("Coordinates", new ArrayList<>());
         data.put("Altitude", new ArrayList<>());
@@ -63,6 +63,7 @@ public class StoreInfo {
                 stringBuilder.append(s).append(", ");
             }
             stringBuilder.append('\n');
+            stringBuilder.append('\n');
         }
         return stringBuilder.toString();
     }
@@ -72,8 +73,8 @@ public class StoreInfo {
         data.get("Altitude").add(alt);
         data.get("Speed").add(speed);
         data.get("Confidence").add(accuracy);
-        // cutting down on repetition
-        if (data.get("Address").size() != 0) {
+        // problem - when I can't get address
+        if (data.get("Address").size() > 0) {
             if (!address.equals(data.get("Address").get(data.get("Address").size() - 1))) {
                 data.get("Address").add(address);
             }

@@ -102,7 +102,7 @@ public class MainActivity extends AppCompatActivity {
     Sensor sensorLight;
     Sensor sensorAcceleration;
     Sensor sensorMagnetic;
-    // helpers for sensors
+    // helpers for sensors to reduce the updating
     int chill_pressure = 0;
     int chill_acl = 0;
     int chill_mag = 0;
@@ -155,11 +155,13 @@ public class MainActivity extends AppCompatActivity {
                 }
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_AMBIENT_TEMPERATURE :
+                        // I do not have this sensor, however, leaving it here for the concept
                         String tempValue = event.values[0] + " °C";
                         tv_temp.setText(tempValue);
                         sensorStorage.updateData("Ambient Temperature", tempValue);
                         break;
                     case Sensor.TYPE_RELATIVE_HUMIDITY :
+                        // same as above
                         String humidityValue = event.values[0] + "%";
                         tv_humidity.setText(humidityValue);
                         sensorStorage.updateData("Relative Humidity", humidityValue);
@@ -168,6 +170,7 @@ public class MainActivity extends AppCompatActivity {
                         if (chill_pressure != 0) {
                             if (chill_pressure > 60) {
                                 chill_pressure = 0;
+                                break;
                             }
                             chill_pressure += 1;
                             break;
@@ -191,6 +194,7 @@ public class MainActivity extends AppCompatActivity {
                         if (chill_acl != 0) {
                             if (chill_acl > 60) {
                                 chill_acl = 0;
+                                break;
                             }
                             chill_acl += 1;
                             break;
@@ -204,6 +208,7 @@ public class MainActivity extends AppCompatActivity {
                         if (chill_mag != 0) {
                             if (chill_mag > 60) {
                                 chill_mag = 0;
+                                break;
                             }
                             chill_mag += 1;
                             break;
@@ -224,13 +229,13 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_FASTEST);
-        sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
+        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_UI);
+        //sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_NORMAL);
+        //sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
 
         // set properties of request
         locationRequest = LocationRequest.create();
@@ -265,16 +270,18 @@ public class MainActivity extends AppCompatActivity {
             if (!checkStorage()) {
                 return;
             }
+            // referencing https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application/2197841#2197841
             Intent sendIntent = new Intent();
             String[] address = new String[]{"georgetownson39@gmail.com"};
             sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.setType("message/rfc822");
             sendIntent.putExtra(Intent.EXTRA_EMAIL, address);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test on " + Calendar.getInstance().toString());
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test with " + storage.getID());
             sendIntent.putExtra(Intent.EXTRA_TEXT, storage.getData() + '\n' + sensorStorage.getData());
 
             Intent shareIntent = Intent.createChooser(sendIntent, null);
-//            shareIntent.putExtra(Intent.EXTRA_CHOOSER_TARGETS, address);
-//            shareIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{sendIntent});
+            shareIntent.putExtra(Intent.EXTRA_CHOOSER_TARGETS, address);
+            shareIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{sendIntent});
             startActivity(shareIntent);
         });
 

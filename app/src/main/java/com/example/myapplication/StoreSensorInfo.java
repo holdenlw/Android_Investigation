@@ -12,10 +12,10 @@ public class StoreSensorInfo {
     private String ID;
 
     private StoreSensorInfo(String id) {
-        ID = id + Calendar.getInstance().toString();
+        ID = id + " at " + Calendar.getInstance().toString();
         data = new HashMap<>();
-        data.put("Ambient Temperature", new ArrayList<>());
-        data.put("Relative Humidity", new ArrayList<>());
+        //data.put("Ambient Temperature", new ArrayList<>());
+        //data.put("Relative Humidity", new ArrayList<>());
         data.put("Light", new ArrayList<>());
         data.put("Pressure", new ArrayList<>());
         data.put("Proximity", new ArrayList<>());
@@ -47,13 +47,14 @@ public class StoreSensorInfo {
                 stringBuilder.append(s).append(", ");
             }
             stringBuilder.append('\n');
+            stringBuilder.append('\n');
         }
         return stringBuilder.toString();
     }
 
     // excluding linear acceleration and magnetic field for now
     public void updateData(String key, String value) {
-        // checking for duplicates
+        // cutting down on duplicates
         if (data.get(key).size() != 0) {
             if (data.get(key).get(data.get(key).size()-1).equals(value)) {
                 return;
