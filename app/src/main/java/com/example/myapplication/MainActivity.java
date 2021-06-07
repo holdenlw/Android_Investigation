@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -10,6 +11,7 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
@@ -47,6 +49,7 @@ import android.widget.Toast;
 //import org.checkerframework.checker.nullness.compatqual.NullableDecl;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Calendar;
 import java.util.List;
 
 import static android.os.Build.*;
@@ -73,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
 //    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
 
     // as a global var this doesn't break...
-    Button b_readFile;
+    Button b_readFile, b_sendData;
 
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
@@ -99,6 +102,10 @@ public class MainActivity extends AppCompatActivity {
     Sensor sensorLight;
     Sensor sensorAcceleration;
     Sensor sensorMagnetic;
+    // helpers for sensors
+    int chill_pressure = 0;
+    int chill_acl = 0;
+    int chill_mag = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,6 +165,14 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Relative Humidity", humidityValue);
                         break;
                     case Sensor.TYPE_PRESSURE :
+                        if (chill_pressure != 0) {
+                            if (chill_pressure > 60) {
+                                chill_pressure = 0;
+                            }
+                            chill_pressure += 1;
+                            break;
+                        }
+                        chill_pressure += 1;
                         String pressureValue = event.values[0] + " hPa";
                         tv_pressure.setText(pressureValue);
                         sensorStorage.updateData("Pressure", pressureValue);
@@ -173,11 +188,27 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Light", lightValue);
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
+                        if (chill_acl != 0) {
+                            if (chill_acl > 60) {
+                                chill_acl = 0;
+                            }
+                            chill_acl += 1;
+                            break;
+                        }
+                        chill_acl += 1;
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_accelerator.setText(aclValue);
                         sensorStorage.updateData("Linear Acceleration", aclValue);
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
+                        if (chill_mag != 0) {
+                            if (chill_mag > 60) {
+                                chill_mag = 0;
+                            }
+                            chill_mag += 1;
+                            break;
+                        }
+                        chill_mag += 1;
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_magnetic.setText(magneticValue);
                         sensorStorage.updateData("Magnetic Field", magneticValue);
@@ -229,41 +260,47 @@ public class MainActivity extends AppCompatActivity {
             stopLocationUpdates();
         });
 
+        b_sendData = findViewById(R.id.b_sendData);
+        b_sendData.setOnClickListener(v -> {
+            if (!checkStorage()) {
+                return;
+            }
+            Intent sendIntent = new Intent();
+            String[] address = new String[]{"georgetownson39@gmail.com"};
+            sendIntent.setAction(Intent.ACTION_SEND);
+            sendIntent.putExtra(Intent.EXTRA_EMAIL, address);
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test on " + Calendar.getInstance().toString());
+            sendIntent.putExtra(Intent.EXTRA_TEXT, storage.getData() + '\n' + sensorStorage.getData());
+
+            Intent shareIntent = Intent.createChooser(sendIntent, null);
+//            shareIntent.putExtra(Intent.EXTRA_CHOOSER_TARGETS, address);
+//            shareIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{sendIntent});
+            startActivity(shareIntent);
+        });
+
         b_readFile = findViewById(R.id.b_readFile);
         tv_data = findViewById(R.id.tv_data);
         tv_data_s = findViewById(R.id.tv_data_s);
 
         b_readFile.setOnClickListener(v -> {
-            if (storage == null) {
+            if (!checkStorage()) {
                 tv_data.setText("Storage is null :(");
-                return;
+                tv_data_s.setText("Storage is null :(");
             }
-
-            String test = storage.getData();
-
-            if (test == null) {
-                tv_data.setText("getData() is null :(");
-                return;
-            }
-
-            tv_data.setText(test);
-
-            if (sensorStorage == null) {
-                tv_data_s.setText("Sensor Storage is Null");
-                return;
-            }
-
-            String test2 = sensorStorage.getData();
-
-            if (test2 == null) {
-                tv_data_s.setText("can't get data");
-                return;
-            }
-
-            tv_data_s.setText(test2);
+            tv_data.setText(storage.getData());
+            tv_data_s.setText(sensorStorage.getData());
         });
 
         updateGPS();
+    }
+
+    private boolean checkStorage() {
+        if (storage == null || sensorStorage == null) {
+            return false;
+        }
+        String test = storage.getData();
+        String test2 = sensorStorage.getData();
+        return test != null && test2 != null;
     }
 
     // might need this later for AAID...

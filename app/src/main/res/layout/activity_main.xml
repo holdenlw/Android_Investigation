@@ -192,12 +192,19 @@
             android:text="@string/tv_AAID" />
     </TableRow>
 
+    <TableRow>
+        <Button
+            android:id="@+id/b_sendData"
+            android:checked="false"
+            android:text="@string/send_the_data"
+            android:layout_span="2" />
+    </TableRow>
 
     <TableRow>
         <Button
             android:id="@+id/b_readFile"
             android:checked="false"
-            android:text="@string/sw_readFile"
+            android:text="@string/read_the_data"
             android:layout_span="2" />
     </TableRow>
 

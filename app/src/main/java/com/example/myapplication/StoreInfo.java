@@ -71,8 +71,15 @@ public class StoreInfo {
         data.get("Coordinates").add(cords);
         data.get("Altitude").add(alt);
         data.get("Speed").add(speed);
-        data.get("Address").add(address);
         data.get("Confidence").add(accuracy);
+        // cutting down on repetition
+        if (data.get("Address").size() != 0) {
+            if (!address.equals(data.get("Address").get(data.get("Address").size() - 1))) {
+                data.get("Address").add(address);
+            }
+        } else {
+            data.get("Address").add(address);
+        }
     }
 
 

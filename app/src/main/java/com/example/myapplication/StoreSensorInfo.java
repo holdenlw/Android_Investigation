@@ -52,12 +52,15 @@ public class StoreSensorInfo {
     }
 
     // excluding linear acceleration and magnetic field for now
-    public void updateData(String changed, String value) {
+    public void updateData(String key, String value) {
         // checking for duplicates
-        if (data.get(changed).get(data.get(changed).size()-1).equals(value)) {
-            return;
+        if (data.get(key).size() != 0) {
+            if (data.get(key).get(data.get(key).size()-1).equals(value)) {
+                return;
+            }
+
         }
-        data.get(changed).add(value);
+        data.get(key).add(value);
     }
 
 }

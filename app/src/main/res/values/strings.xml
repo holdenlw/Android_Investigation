@@ -74,4 +74,6 @@
     <string name="title_data">Data</string>
     <string name="tv_emptyData"> </string>
     <string name="loadData">Load</string>
+    <string name="send_the_data">Send the Data</string>
+    <string name="read_the_data">Read the Data</string>
 </resources>
