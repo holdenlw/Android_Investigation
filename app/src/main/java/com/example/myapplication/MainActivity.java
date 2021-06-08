@@ -35,6 +35,7 @@ import com.google.android.gms.location.LocationServices;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
+import java.util.Calendar;
 import java.util.List;
 
 import static android.os.Build.VERSION;
@@ -149,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
             public void onSensorChanged(SensorEvent event) {
                 // initialization of the singleton
                 if (sensorStorage == null) {
-                    sensorStorage = StoreSensorInfo.getInstance(device_AID);
+                    sensorStorage = StoreSensorInfo.getInstance(device_AID + " and " + account_AAID);
                 }
                 switch (event.sensor.getType()) {
                     case Sensor.TYPE_AMBIENT_TEMPERATURE :
@@ -200,7 +201,7 @@ public class MainActivity extends AppCompatActivity {
                         chill_acl += 1;
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_accelerator.setText(aclValue);
-                        sensorStorage.updateData("Linear Acceleration", aclValue);
+                        sensorStorage.updateData("Linear Acceleration", "(" + aclValue + ")");
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
                         if (chill_mag != 0) {
@@ -214,7 +215,7 @@ public class MainActivity extends AppCompatActivity {
                         chill_mag += 1;
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_magnetic.setText(magneticValue);
-                        sensorStorage.updateData("Magnetic Field", magneticValue);
+                        sensorStorage.updateData("Magnetic Field", "(" + magneticValue + ")");
                         break;
                     default:
                         break;
@@ -273,7 +274,7 @@ public class MainActivity extends AppCompatActivity {
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("message/rfc822");
             sendIntent.putExtra(Intent.EXTRA_EMAIL, address);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test with " + storage.getID());
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test with " + storage.getID() + " at " + Calendar.getInstance().getTime());
             sendIntent.putExtra(Intent.EXTRA_TEXT, storage.getData() + '\n' + sensorStorage.getData());
 
             Intent shareIntent = Intent.createChooser(sendIntent, null);

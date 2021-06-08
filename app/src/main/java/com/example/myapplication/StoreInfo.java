@@ -30,7 +30,7 @@ public class StoreInfo {
     private String ID;
 
     private StoreInfo(String id) {
-        ID = id + " at " + Calendar.getInstance().getTime();
+        ID = id;
         data = new HashMap<>();
         data.put("Coordinates", new ArrayList<>());
         data.put("Altitude", new ArrayList<>());
@@ -73,7 +73,8 @@ public class StoreInfo {
         data.get("Altitude").add(alt);
         data.get("Speed").add(speed);
         data.get("Confidence").add(accuracy);
-        // problem - when I can't get address
+        // Need to make sure address is not be repeated when it doesn't change
+        // this might not be working
         if (data.get("Address").size() > 0) {
             if (!address.equals(data.get("Address").get(data.get("Address").size() - 1))) {
                 data.get("Address").add(address);
@@ -82,7 +83,6 @@ public class StoreInfo {
             data.get("Address").add(address);
         }
     }
-
 
     // writing file and putting it into local storage
     public void writeFile(Context context) {
