@@ -11,49 +11,43 @@ import android.hardware.SensorManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
+import androidx.core.app.ActivityCompat;
+
+import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
+import com.google.android.gms.common.GooglePlayServicesRepairableException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+
+import org.jetbrains.annotations.NotNull;
+
+import java.io.IOException;
+import java.util.List;
+
+import static android.os.Build.VERSION;
+import static android.widget.Toast.makeText;
+
+//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
+//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 //import com.google.common.util.concurrent.FutureCallback;
 //import com.google.common.util.concurrent.Futures;
 //import com.google.common.util.concurrent.ListenableFuture;
-
 //import androidx.ads.identifier.AdvertisingIdClient;
 //import androidx.ads.identifier.AdvertisingIdInfo;
-import androidx.annotation.NonNull;
-import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.SwitchCompat;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.core.app.ActivityCompat;
-
-import android.provider.Settings;
-
-import android.view.Gravity;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.widget.Button;
-import android.widget.LinearLayout;
-import android.widget.PopupWindow;
-import android.widget.TextView;
-import android.widget.Toast;
-
 //import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.Calendar;
-import java.util.List;
-
-import static android.os.Build.*;
-import static android.widget.Toast.makeText;
 //import static com.google.android.gms.ads.identifier.AdvertisingIdClient.*;
 
 // the sauce of the project: https://youtu.be/_xUcYfbtfsI
@@ -62,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
     public static final int DEFAULT_UPDATE_INTERVAL = 3;
     public static final int FASTEST_UPDATE_INTERVAL = 5;
     private static final int PERMISSION_FINE_LOCATION = 99;
+    private static final int CHILL_FACTOR = 100;
 
-    // removing tv_updates and tv_sensor
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
             tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_data, tv_data_s;
 
-    String device_AID;
+    String device_AID, account_AAID;
 
 //    String account_AAID;
 //    Boolean isLimitedTrackingOn;
@@ -133,7 +127,11 @@ public class MainActivity extends AppCompatActivity {
         // studio is telling me using "getString" to get Android ID is not recommended
         device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         tv_AID.setText(device_AID);
-        loadTheAAID();
+//        loadTheAAID(); --> call runnable
+        Runnable idRunnable = this::loadTheAAID;
+        Thread idThread = new Thread(idRunnable);
+        idThread.start();
+
 
         // Sensors
         sensorManager = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -168,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case Sensor.TYPE_PRESSURE :
                         if (chill_pressure != 0) {
-                            if (chill_pressure > 60) {
+                            if (chill_pressure > CHILL_FACTOR) {
                                 chill_pressure = 0;
                                 break;
                             }
@@ -192,7 +190,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
                         if (chill_acl != 0) {
-                            if (chill_acl > 60) {
+                            if (chill_acl > CHILL_FACTOR) {
                                 chill_acl = 0;
                                 break;
                             }
@@ -206,7 +204,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
                         if (chill_mag != 0) {
-                            if (chill_mag > 60) {
+                            if (chill_mag > CHILL_FACTOR) {
                                 chill_mag = 0;
                                 break;
                             }
@@ -251,11 +249,10 @@ public class MainActivity extends AppCompatActivity {
                 updateUIValue(locationResult.getLastLocation());
             }
         };
-
-        // TODO
-        // Probably want to remove this as well and replace it with a non-UI function
-        // There is no need to turn off location tracking from the UI so it might be best
-        // only to remove the stopLocationUpdates()
+        /* Note
+        The only purpose this switch servers is automatically turning on location tracking.
+        It might be best practice to remove or replace this way of doing it, but not worth it for now
+         */
         SwitchCompat locationSwitch = (SwitchCompat) findViewById(R.id.sw_locationsupdates);
         locationSwitch.setOnClickListener(v -> {
             if (locationSwitch.isChecked()) {
@@ -267,7 +264,7 @@ public class MainActivity extends AppCompatActivity {
 
         b_sendData = findViewById(R.id.b_sendData);
         b_sendData.setOnClickListener(v -> {
-            if (!checkStorage()) {
+            if (checkStorage()) {
                 return;
             }
             // referencing https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application/2197841#2197841
@@ -285,12 +282,14 @@ public class MainActivity extends AppCompatActivity {
             startActivity(shareIntent);
         });
 
+        /* This section is for testing - can be removed on deployment
+        * */
         b_readFile = findViewById(R.id.b_readFile);
         tv_data = findViewById(R.id.tv_data);
         tv_data_s = findViewById(R.id.tv_data_s);
 
         b_readFile.setOnClickListener(v -> {
-            if (!checkStorage()) {
+            if (checkStorage()) {
                 tv_data.setText("Storage is null :(");
                 tv_data_s.setText("Storage is null :(");
             }
@@ -303,25 +302,37 @@ public class MainActivity extends AppCompatActivity {
 
     private boolean checkStorage() {
         if (storage == null || sensorStorage == null) {
-            return false;
+            return true;
         }
         String test = storage.getData();
         String test2 = sensorStorage.getData();
-        return test != null && test2 != null;
+        return test == null || test2 == null;
     }
 
-    // might need this later for AAID...
-//    private Runnable updateDataRunnable = new Runnable() {
-//        @Override
-//        public void run() {
-//
-//        }
-//    };
 
+    /* Saving grace of stack overflow: https://stackoverflow.com/questions/64087871/how-to-get-google-ad-id-in-android-java */
     private void loadTheAAID() {
-        tv_AAID.setText("Need SDKs to get AAID");
-    }
+        AdvertisingIdClient.Info idInfo;
+        try {
+            idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
+            if(idInfo.isLimitAdTrackingEnabled()) {
+                tv_AAID.setText("Limited tracking enabled");
+            } else {
+                account_AAID = idInfo.getId();
+                tv_AAID.setText(account_AAID);
+            }
+        } catch (IOException e) {
+            tv_AAID.setText("IOException: " + e);
+            e.printStackTrace();
+        } catch (GooglePlayServicesNotAvailableException e) {
+            tv_AAID.setText("Google Play Services Not Available");
+            e.printStackTrace();
+        } catch (GooglePlayServicesRepairableException e) {
+            tv_AAID.setText("Google Play Repairable Exception");
+            e.printStackTrace();
+        }
 
+    }
 
     // Turning off sensors and location tracking -- no longer needed but leaving it here
     private void stopLocationUpdates() {
@@ -437,7 +448,7 @@ public class MainActivity extends AppCompatActivity {
         String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
 
         if (storage == null) {
-            storage = StoreInfo.getInstance(device_AID, cords, alt, speed, addy, confidence);
+            storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, cords, alt, speed, addy, confidence);
         } else storage.updateData(cords, alt, speed, addy, confidence);
     }
 
