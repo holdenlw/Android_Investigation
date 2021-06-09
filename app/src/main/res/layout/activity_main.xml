@@ -192,6 +192,107 @@
             android:text="@string/tv_AAID" />
     </TableRow>
 
+   <TableRow>
+       <TextView
+           android:textAppearance="@style/TextAppearance.AppCompat.Headline"
+           android:id="@+id/title_conditions"
+           android:text="Condition"
+           android:paddingTop="16dp"
+           android:layout_span="2" />
+   </TableRow>
+
+   <TableRow>
+       <TextView
+           android:id="@+id/tv_labelCond0"
+           android:text="Age" />
+       <RadioGroup
+           android:id="@+id/rg_a"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <RadioButton
+               android:id="@+id/rb_a_0"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Default"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_a_1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Kid"
+               android:onClick="onConditionClick"/>
+
+       </RadioGroup>
+   </TableRow>
+
+   <TableRow>
+       <TextView
+           android:id="@+id/tv_labelCond1"
+           android:text="Settings" />
+       <RadioGroup
+           android:id="@+id/rg_s"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <RadioButton
+               android:id="@+id/rb_s_0"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Default"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_s_1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="Privacy"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_s_2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="No Privacy"
+               android:onClick="onConditionClick"/>
+
+       </RadioGroup>
+   </TableRow>
+
+   <TableRow>
+       <TextView
+           android:id="@+id/tv_labelCond2"
+           android:text="Enviroment" />
+       <RadioGroup
+           android:id="@+id/rg_e"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:orientation="horizontal">
+           <RadioButton
+               android:id="@+id/rb_e_0"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="S"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_e_1"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="W"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_e_2"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="D"
+               android:onClick="onConditionClick"/>
+           <RadioButton
+               android:id="@+id/rb_e_3"
+               android:layout_width="wrap_content"
+               android:layout_height="wrap_content"
+               android:text="R2R"
+               android:onClick="onConditionClick"/>
+       </RadioGroup>
+   </TableRow>
+
     <TableRow>
         <Button
             android:id="@+id/b_sendData"

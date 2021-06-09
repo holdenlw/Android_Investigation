@@ -36,7 +36,7 @@ public class StoreInfo {
         data.put("Altitude", new ArrayList<>());
         data.put("Speed", new ArrayList<>());
         data.put("Address", new ArrayList<>());
-        data.put("Confidence", new ArrayList<>());
+        data.put("Accuracy", new ArrayList<>());
     }
 
     public static StoreInfo getInstance(String id, String cords, String alt, String speed, String address, String accuracy) {
@@ -72,7 +72,7 @@ public class StoreInfo {
         data.get("Coordinates").add(cords);
         data.get("Altitude").add(alt);
         data.get("Speed").add(speed);
-        data.get("Confidence").add(accuracy);
+        data.get("Accuracy").add(accuracy);
         // Need to make sure address is not be repeated when it doesn't change
         // this might not be working
         if (data.get("Address").size() > 0) {
@@ -84,69 +84,6 @@ public class StoreInfo {
         }
     }
 
-    // writing file and putting it into local storage
-    public void writeFile(Context context) {
-        try  {
-            FileOutputStream fos = context.openFileOutput(ID, Context.MODE_PRIVATE);
-            fos.write(data.toString().getBytes());
-        } catch (IOException e) {
-            Toast.makeText(context, "Can't write file" ,Toast.LENGTH_SHORT).show();
-        }
-    }
 
-    // for now this is just testing that this all works
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public String readFile(Context context) {
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            FileInputStream fis = context.openFileInput(ID + ".txt");
-            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String line = reader.readLine();
-            while (line != null) {
-                stringBuilder.append(line).append('\n');
-                line = reader.readLine();
-            }
-        } catch (FileNotFoundException e) {
-            Toast.makeText(context, "Can't find file", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(context, "idk", Toast.LENGTH_SHORT).show();
-        }
-        return stringBuilder.toString();
-    }
-
-    /* I will not use this function for now, but it will be useful in the future */
-    @RequiresApi(api = Build.VERSION_CODES.KITKAT)
-    public void updateFile(Context context)  {
-        StringBuilder stringBuilder = new StringBuilder();
-        try {
-            FileInputStream fis = context.openFileInput(ID + ".txt");
-            InputStreamReader inputStreamReader = new InputStreamReader(fis, StandardCharsets.UTF_8);
-            BufferedReader reader = new BufferedReader(inputStreamReader);
-            String line = reader.readLine();
-            while (line != null) {
-                // going crazy with if statements
-                if (line.contains("Coordinates")) {
-                    stringBuilder.append(line).append(", ").append(this.data.get("Coordinates")).append('\n');
-                } else if (line.contains("Altitude")) {
-                    stringBuilder.append(line).append(", ").append(this.data.get("Altitude")).append('\n');
-                } else if (line.contains("Speed")) {
-                    stringBuilder.append(line).append(", ").append(this.data.get("Speed")).append('\n');
-                } else if (line.contains("Address")) {
-                    stringBuilder.append(line).append(", ").append(this.data.get("Address")).append('\n');
-                } else {
-                    stringBuilder.append(line).append(", ").append(this.data.get("Confidence")).append('\n');
-                }
-                line = reader.readLine();
-            }
-        } catch (FileNotFoundException e) {
-            Toast.makeText(context, "Can't find file", Toast.LENGTH_SHORT).show();
-        } catch (IOException e) {
-            Toast.makeText(context, "idk", Toast.LENGTH_SHORT).show();
-        } finally {
-            String contents = stringBuilder.toString();
-        }
-        // I just realized I could just write the file once at the end...
-    }
 
 }

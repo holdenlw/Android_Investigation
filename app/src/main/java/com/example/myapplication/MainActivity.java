@@ -14,11 +14,14 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.view.View;
 import android.widget.Button;
+import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
@@ -36,7 +39,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static android.os.Build.VERSION;
 import static android.widget.Toast.makeText;
@@ -65,12 +70,6 @@ public class MainActivity extends AppCompatActivity {
 
     String device_AID, account_AAID;
 
-//    String account_AAID;
-//    Boolean isLimitedTrackingOn;
-//    String providerPackage;
-//    ListenableFuture<AdvertisingIdInfo> listenableFutureAAID;
-
-    // as a global var this doesn't break...
     Button b_readFile, b_sendData;
 
     // The heart and soul of this app
@@ -102,6 +101,10 @@ public class MainActivity extends AppCompatActivity {
     int chill_acl = 0;
     int chill_mag = 0;
 
+    // Conditions
+    RadioButton rb_a_0, rb_a_1, rb_s_0, rb_s_1, rb_s_2, rb_e_0, rb_e_1, rb_e_2, rb_e_3;
+    HashMap<String, String> conditions;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -122,17 +125,30 @@ public class MainActivity extends AppCompatActivity {
         tv_magnetic = findViewById(R.id.tv_magnetic);
         tv_AAID = findViewById(R.id.tv_AAID);
 
+        rb_a_0 = (RadioButton) findViewById(R.id.rb_a_0);
+        rb_a_1 = (RadioButton) findViewById(R.id.rb_a_1);
+        rb_s_0 = (RadioButton) findViewById(R.id.rb_s_0);
+        rb_s_1 = (RadioButton) findViewById(R.id.rb_s_1);
+        rb_s_2 = (RadioButton) findViewById(R.id.rb_s_2);
+        rb_e_0 = (RadioButton) findViewById(R.id.rb_e_0);
+        rb_e_1 = (RadioButton) findViewById(R.id.rb_e_1);
+        rb_e_2 = (RadioButton) findViewById(R.id.rb_e_2);
+        rb_e_3 = (RadioButton) findViewById(R.id.rb_e_3);
+
+        conditions = new HashMap<>();
+
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
-        // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments
+        // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments -- its super easy
         tv_AID = findViewById(R.id.tv_AID);
         // studio is telling me using "getString" to get Android ID is not recommended
-        device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+//        device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        // because it is likely this considered harmful activity, lets see if this fixes things
+        device_AID = "my pixel";
+
         tv_AID.setText(device_AID);
-//        loadTheAAID(); --> call runnable
         Runnable idRunnable = this::loadTheAAID;
         Thread idThread = new Thread(idRunnable);
         idThread.start();
-
 
         // Sensors
         sensorManager = (SensorManager) getApplicationContext().getSystemService(Context.SENSOR_SERVICE);
@@ -268,6 +284,11 @@ public class MainActivity extends AppCompatActivity {
             if (checkStorage()) {
                 return;
             }
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("              Conditions               ").append('\n');
+            for (Map.Entry<String, String> entry : conditions.entrySet()) {
+                stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
+            }
             // referencing https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application/2197841#2197841
             Intent sendIntent = new Intent();
             String[] address = new String[]{"georgetownson39@gmail.com"};
@@ -275,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
             sendIntent.setType("message/rfc822");
             sendIntent.putExtra(Intent.EXTRA_EMAIL, address);
             sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test with " + storage.getID() + " at " + Calendar.getInstance().getTime());
-            sendIntent.putExtra(Intent.EXTRA_TEXT, storage.getData() + '\n' + sensorStorage.getData());
+            sendIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString() + '\n' + storage.getData() + '\n' + sensorStorage.getData());
 
             Intent shareIntent = Intent.createChooser(sendIntent, null);
             shareIntent.putExtra(Intent.EXTRA_CHOOSER_TARGETS, address);
@@ -284,7 +305,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
         /* This section is for testing - can be removed on deployment
-        * */
         b_readFile = findViewById(R.id.b_readFile);
         tv_data = findViewById(R.id.tv_data);
         tv_data_s = findViewById(R.id.tv_data_s);
@@ -297,8 +317,91 @@ public class MainActivity extends AppCompatActivity {
             tv_data.setText(storage.getData());
             tv_data_s.setText(sensorStorage.getData());
         });
+         */
 
         updateGPS();
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    public void onConditionClick(View view) {
+        boolean checked = ((RadioButton) view).isChecked();
+        int v_id = view.getId();
+        // have to use if/else instead of switch because ID is non-final
+        // this is an ugly performance beast
+        if (v_id == R.id.rb_a_0) {
+            if (checked) {
+                if (conditions.containsKey("Age")) {
+                    conditions.replace("Age", "Default");
+                } else {
+                    conditions.put("Age", "Default");
+                }
+            }
+        } else if (v_id == R.id.rb_a_1) {
+            if (checked) {
+                if (conditions.containsKey("Age")) {
+                    conditions.replace("Age", "Kid");
+                } else {
+                    conditions.put("Age", "Kid");
+                }
+            }
+        } else if (v_id == R.id.rb_s_0) {
+            if (checked) {
+                if (conditions.containsKey("Settings")) {
+                    conditions.replace("Settings", "Default");
+                } else {
+                    conditions.put("Settings", "Default");
+                }
+            }
+        } else if (v_id == R.id.rb_s_1) {
+            if (checked) {
+                if (conditions.containsKey("Settings")) {
+                    conditions.replace("Settings", "Privacy");
+                } else {
+                    conditions.put("Settings", "Privacy");
+                }
+            }
+        } else if (v_id == R.id.rb_s_2) {
+            if (checked) {
+                if (conditions.containsKey("Settings")) {
+                    conditions.replace("Settings", "NoPrivacy");
+                } else {
+                    conditions.put("Settings", "NoPrivacy");
+                }
+            }
+        } else if (v_id == R.id.rb_e_0) {
+            if (checked) {
+                if (conditions.containsKey("Environment")) {
+                    conditions.replace("Environment", "Sitting");
+                } else {
+                    conditions.put("Environment", "Sitting");
+                }
+            }
+        } else if (v_id == R.id.rb_e_1) {
+            if (checked) {
+                if (conditions.containsKey("Environment")) {
+                    conditions.replace("Environment", "Walking");
+                } else {
+                    conditions.put("Environment", "Walking");
+                }
+            }
+        } else if (v_id == R.id.rb_e_2) {
+            if (checked) {
+                if (conditions.containsKey("Environment")) {
+                    conditions.replace("Environment", "Driving");
+                } else {
+                    conditions.put("Environment", "Driving");
+                }
+            }
+        } else if (v_id == R.id.rb_e_3) {
+            if (checked) {
+                if (conditions.containsKey("Environment")) {
+                    conditions.replace("Environment", "Room2Room");
+                } else {
+                    conditions.put("Environment", "Room2Room");
+                }
+            }
+        }
+
     }
 
     private boolean checkStorage() {
@@ -309,7 +412,6 @@ public class MainActivity extends AppCompatActivity {
         String test2 = sensorStorage.getData();
         return test == null || test2 == null;
     }
-
 
     /* Saving grace of stack overflow: https://stackoverflow.com/questions/64087871/how-to-get-google-ad-id-in-android-java */
     private void loadTheAAID() {
@@ -323,7 +425,8 @@ public class MainActivity extends AppCompatActivity {
                 tv_AAID.setText(account_AAID);
             }
         } catch (IOException e) {
-            tv_AAID.setText("IOException: " + e);
+            String exception_explained = "IOException: " + e;
+            tv_AAID.setText(exception_explained);
             e.printStackTrace();
         } catch (GooglePlayServicesNotAvailableException e) {
             tv_AAID.setText("Google Play Services Not Available");
@@ -348,7 +451,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationUpdates() {
-//        tv_updates.setText("Location is being tracked");
+        /* Probably don't want to implement this error handling because we want to see the difference between
+        the conditions where permissions are on and off
+        */
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -358,10 +463,9 @@ public class MainActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
             return;
-
             // yeah idk about what is going on up here
         }
-        /* TODO: check this out... */
+        /* Might need to change this but it works for now */
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         updateGPS();
     }
