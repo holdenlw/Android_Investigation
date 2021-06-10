@@ -104,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
     // Conditions
     RadioButton rb_a_0, rb_a_1, rb_s_0, rb_s_1, rb_s_2, rb_e_0, rb_e_1, rb_e_2, rb_e_3;
     HashMap<String, String> conditions;
+    long start_time;
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -125,17 +127,18 @@ public class MainActivity extends AppCompatActivity {
         tv_magnetic = findViewById(R.id.tv_magnetic);
         tv_AAID = findViewById(R.id.tv_AAID);
 
-        rb_a_0 = (RadioButton) findViewById(R.id.rb_a_0);
-        rb_a_1 = (RadioButton) findViewById(R.id.rb_a_1);
-        rb_s_0 = (RadioButton) findViewById(R.id.rb_s_0);
-        rb_s_1 = (RadioButton) findViewById(R.id.rb_s_1);
-        rb_s_2 = (RadioButton) findViewById(R.id.rb_s_2);
-        rb_e_0 = (RadioButton) findViewById(R.id.rb_e_0);
-        rb_e_1 = (RadioButton) findViewById(R.id.rb_e_1);
-        rb_e_2 = (RadioButton) findViewById(R.id.rb_e_2);
-        rb_e_3 = (RadioButton) findViewById(R.id.rb_e_3);
+        rb_a_0 = findViewById(R.id.rb_a_0);
+        rb_a_1 = findViewById(R.id.rb_a_1);
+        rb_s_0 = findViewById(R.id.rb_s_0);
+        rb_s_1 = findViewById(R.id.rb_s_1);
+        rb_s_2 = findViewById(R.id.rb_s_2);
+        rb_e_0 = findViewById(R.id.rb_e_0);
+        rb_e_1 = findViewById(R.id.rb_e_1);
+        rb_e_2 = findViewById(R.id.rb_e_2);
+        rb_e_3 = findViewById(R.id.rb_e_3);
 
         conditions = new HashMap<>();
+        start_time = System.currentTimeMillis();
 
         // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments -- its super easy
@@ -284,19 +287,32 @@ public class MainActivity extends AppCompatActivity {
             if (checkStorage()) {
                 return;
             }
+            long milli = System.currentTimeMillis() - start_time;
+            int secs = (int) (milli / 1000);
+            int mins = secs / 60;
+            secs = secs % 60;
+            String duration = String.format("%d:%02d", mins, secs);
+            if (conditions.containsKey("Duration")) {
+                conditions.replace("Duration", duration);
+            } else {
+                conditions.put("Duration", duration);
+            }
+
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("              Conditions               ").append('\n');
             for (Map.Entry<String, String> entry : conditions.entrySet()) {
                 stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
             }
+
             // referencing https://stackoverflow.com/questions/2197741/how-to-send-emails-from-my-android-application/2197841#2197841
             Intent sendIntent = new Intent();
             String[] address = new String[]{"georgetownson39@gmail.com"};
             sendIntent.setAction(Intent.ACTION_SEND);
             sendIntent.setType("message/rfc822");
             sendIntent.putExtra(Intent.EXTRA_EMAIL, address);
-            sendIntent.putExtra(Intent.EXTRA_SUBJECT, "Test with " + storage.getID() + " at " + Calendar.getInstance().getTime());
-            sendIntent.putExtra(Intent.EXTRA_TEXT, stringBuilder.toString() + '\n' + storage.getData() + '\n' + sensorStorage.getData());
+            sendIntent.putExtra(Intent.EXTRA_SUBJECT, Calendar.getInstance().getTime().toString());
+            sendIntent.putExtra(Intent.EXTRA_TEXT, "Test with " + storage.getID()+ '\n'
+                    + stringBuilder.toString() + '\n' + storage.getData() + '\n' + sensorStorage.getData());
 
             Intent shareIntent = Intent.createChooser(sendIntent, null);
             shareIntent.putExtra(Intent.EXTRA_CHOOSER_TARGETS, address);
