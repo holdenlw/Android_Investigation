@@ -7,6 +7,7 @@ import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import org.jetbrains.annotations.NotNull;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
@@ -51,7 +52,7 @@ public class StoreInfo {
 
     public String getData() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("              Location Data               ").append('\n');
+        stringBuilder.append("Location Data: ").append('\n');
         for (Map.Entry<String, ArrayList<String>> entry : data.entrySet()) {
             stringBuilder.append(entry.getKey()).append(": ");
             ArrayList<String> list = entry.getValue();
@@ -63,12 +64,11 @@ public class StoreInfo {
                 stringBuilder.append(s).append(", ");
             }
             stringBuilder.append('\n');
-            stringBuilder.append('\n');
         }
         return stringBuilder.toString();
     }
 
-    public void updateData(String cords, String alt, String speed, String address, String accuracy) {
+    public void updateData(@NotNull String cords, @NotNull String alt, @NotNull String speed, @NotNull String address, @NotNull String accuracy) {
         data.get("Coordinates").add(cords);
         data.get("Altitude").add(alt);
         data.get("Speed").add(speed);

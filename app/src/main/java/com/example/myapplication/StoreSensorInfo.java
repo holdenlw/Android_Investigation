@@ -1,5 +1,7 @@
 package com.example.myapplication;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -35,7 +37,7 @@ public class StoreSensorInfo {
 
     public String getData() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("              Sensor Data               ").append('\n');
+        stringBuilder.append("Sensor Data: ").append('\n');
         for (Map.Entry<String, ArrayList<String>> entry : data.entrySet()) {
             stringBuilder.append(entry.getKey()).append(": ");
             ArrayList<String> list = entry.getValue();
@@ -47,20 +49,12 @@ public class StoreSensorInfo {
                 stringBuilder.append(s).append(", ");
             }
             stringBuilder.append('\n');
-            stringBuilder.append('\n');
         }
         return stringBuilder.toString();
     }
 
     // excluding linear acceleration and magnetic field for now
-    public void updateData(String key, String value) {
-        // cutting down on duplicates
-        if (data.get(key).size() != 0) {
-            if (data.get(key).get(data.get(key).size()-1).equals(value)) {
-                return;
-            }
-
-        }
+    public void updateData(@NotNull String key, @NotNull String value) {
         data.get(key).add(value);
     }
 

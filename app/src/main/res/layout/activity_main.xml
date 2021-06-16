@@ -19,7 +19,7 @@
         <androidx.appcompat.widget.SwitchCompat
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             android:id="@+id/sw_locationsupdates"
-            android:checked="true"
+            android:checked="false"
             android:text="@string/location_updates"
             android:layout_span="2" />
     </TableRow>

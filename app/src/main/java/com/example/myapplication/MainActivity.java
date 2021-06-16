@@ -46,17 +46,7 @@ import java.util.Map;
 import static android.os.Build.VERSION;
 import static android.widget.Toast.makeText;
 
-//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-//import com.google.android.gms.ads.identifier.AdvertisingIdClient;
-//import com.google.common.util.concurrent.FutureCallback;
-//import com.google.common.util.concurrent.Futures;
-//import com.google.common.util.concurrent.ListenableFuture;
-//import androidx.ads.identifier.AdvertisingIdClient;
-//import androidx.ads.identifier.AdvertisingIdInfo;
-//import org.checkerframework.checker.nullness.compatqual.NullableDecl;
-//import static com.google.android.gms.ads.identifier.AdvertisingIdClient.*;
 
-// the sauce of the project: https://youtu.be/_xUcYfbtfsI
 public class MainActivity extends AppCompatActivity {
     // Global constants
     public static final int DEFAULT_UPDATE_INTERVAL = 3;
@@ -75,9 +65,6 @@ public class MainActivity extends AppCompatActivity {
     // The heart and soul of this app
     FusedLocationProviderClient fusedLocationProviderClient;
 
-    // tracking location
-//    boolean updateOn = false;
-
     // for config
     LocationRequest locationRequest;
     LocationCallback locationCallback;
@@ -89,13 +76,7 @@ public class MainActivity extends AppCompatActivity {
     // Sensors
     SensorManager sensorManager;
     SensorEventListener sensorEventListener;
-    Sensor sensorTemp;
-    Sensor sensorHumidity;
-    Sensor sensorPressure;
-    Sensor sensorProximity;
-    Sensor sensorLight;
-    Sensor sensorAcceleration;
-    Sensor sensorMagnetic;
+    Sensor sensorTemp, sensorHumidity, sensorPressure, sensorProximity, sensorLight, sensorAcceleration, sensorMagnetic;
     // helpers for sensors to reduce the updating
     int chill_pressure = 0;
     int chill_acl = 0;
@@ -144,9 +125,9 @@ public class MainActivity extends AppCompatActivity {
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments -- its super easy
         tv_AID = findViewById(R.id.tv_AID);
         // studio is telling me using "getString" to get Android ID is not recommended
-//        device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
+        device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         // because it is likely this considered harmful activity, lets see if this fixes things
-        device_AID = "my pixel";
+//        device_AID = "my pixel";
 
         tv_AID.setText(device_AID);
         Runnable idRunnable = this::loadTheAAID;
@@ -176,13 +157,13 @@ public class MainActivity extends AppCompatActivity {
                         // I do not have this sensor, however, leaving it here for the concept
                         String tempValue = event.values[0] + " °C";
                         tv_temp.setText(tempValue);
-                        sensorStorage.updateData("Ambient Temperature", tempValue);
+                        sensorStorage.updateData("Ambient Temperature", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_RELATIVE_HUMIDITY :
                         // same as above
-                        String humidityValue = event.values[0] + "%";
-                        tv_humidity.setText(humidityValue);
-                        sensorStorage.updateData("Relative Humidity", humidityValue);
+                        String hValue = event.values[0] + "%";
+                        tv_humidity.setText(hValue);
+                        sensorStorage.updateData("Relative Humidity", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_PRESSURE :
                         if (chill_pressure != 0) {
@@ -196,17 +177,17 @@ public class MainActivity extends AppCompatActivity {
                         chill_pressure += 1;
                         String pressureValue = event.values[0] + " hPa";
                         tv_pressure.setText(pressureValue);
-                        sensorStorage.updateData("Pressure", pressureValue);
+                        sensorStorage.updateData("Pressure", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_PROXIMITY :
                         String proximityValue =  event.values[0] + " cm";
                         tv_proximity.setText(proximityValue);
-                        sensorStorage.updateData("Proximity", proximityValue);
+                        sensorStorage.updateData("Proximity", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_LIGHT :
                         String lightValue =  event.values[0] + " SI lux";
                         tv_light.setText(lightValue);
-                        sensorStorage.updateData("Light", lightValue);
+                        sensorStorage.updateData("Light", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
                         if (chill_acl != 0) {
@@ -258,9 +239,10 @@ public class MainActivity extends AppCompatActivity {
         // set properties of request
         locationRequest = LocationRequest.create();
         // We can keep this simple -- more likely to get errors if running too fast
-        // how often default location request occurs
-        // Highest priority setting -- BALANCED recommended
-        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL).setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        // how often default location request occur; Highest priority setting -- BALANCED recommended
+        //
+        // change from high priority to balanced ==> high prority set when fine location acess gratned
+        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL).setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
 
         locationCallback = new LocationCallback() {
             @Override
@@ -299,7 +281,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.append("              Conditions               ").append('\n');
+            stringBuilder.append("Conditions").append('\n');
             for (Map.Entry<String, String> entry : conditions.entrySet()) {
                 stringBuilder.append(entry.getKey()).append(": ").append(entry.getValue()).append('\n');
             }
@@ -320,7 +302,7 @@ public class MainActivity extends AppCompatActivity {
             startActivity(shareIntent);
         });
 
-        /* This section is for testing - can be removed on deployment
+        /* This section is for testing - can be removed on deployment */
         b_readFile = findViewById(R.id.b_readFile);
         tv_data = findViewById(R.id.tv_data);
         tv_data_s = findViewById(R.id.tv_data_s);
@@ -331,9 +313,7 @@ public class MainActivity extends AppCompatActivity {
                 tv_data_s.setText("Storage is null :(");
             }
             tv_data.setText(storage.getData());
-            tv_data_s.setText(sensorStorage.getData());
         });
-         */
 
         updateGPS();
     }
@@ -435,6 +415,7 @@ public class MainActivity extends AppCompatActivity {
         try {
             idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
             if(idInfo.isLimitAdTrackingEnabled()) {
+                account_AAID = "Privacy Enabled";
                 tv_AAID.setText("Limited tracking enabled");
             } else {
                 account_AAID = idInfo.getId();
@@ -462,7 +443,6 @@ public class MainActivity extends AppCompatActivity {
         tv_address.setText("Off");
         tv_speed.setText("Off");
         tv_altitude.setText("Off");
-        // Studio is mad but this logic is stupid
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
@@ -478,6 +458,7 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
+            stopLocationUpdates();
             return;
             // yeah idk about what is going on up here
         }
@@ -492,37 +473,32 @@ public class MainActivity extends AppCompatActivity {
 
         if (requestCode == PERMISSION_FINE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 updateGPS();
             } else {
                 makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
                 finish();
             }
+//            } else {
+//                if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+//                    requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
+//                }
+//            }
         }
     }
 
     private void updateGPS() {
         // get permissions, get location, then update UI
-         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
-         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-
-             // ##### MAYBE ADD MORE HERE ##### //
-             // Current location more likely to throw errors and is limited
-             // Maybe getting the last location is just fine for our purposes
-//             fusedLocationProviderClient.getCurrentLocation(priority int and CancellationToken).addOnSuccessListener(this,
-//                     new OnSuccessListener<Location>() {
-//                         @Override
-//                         public void onSuccess(Location location) {
-//                             updateUIValue(location);
-//                         }
-//                     });
-
-             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
-                     this::updateUIValue);
-         } else {
-             if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                 requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-             }
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
+                    this::updateUIValue);
+        } else {
+            stopLocationUpdates();
+            if (storage == null) {
+                storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, "null", "null", "null", "null", "null");
+            }
          }
     }
 
@@ -550,7 +526,7 @@ public class MainActivity extends AppCompatActivity {
             speed = String.valueOf(location.getSpeed());
             tv_speed.setText(speed);
         } else {
-            tv_speed.setText(R.string.tv_speed);
+            tv_speed.setText("No Speed");
             speed = "No speed";
         }
 
