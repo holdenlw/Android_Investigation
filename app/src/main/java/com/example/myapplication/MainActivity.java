@@ -14,6 +14,7 @@ import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
+import android.telephony.TelephonyManager;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RadioButton;
@@ -78,14 +79,16 @@ public class MainActivity extends AppCompatActivity {
     SensorEventListener sensorEventListener;
     Sensor sensorTemp, sensorHumidity, sensorPressure, sensorProximity, sensorLight, sensorAcceleration, sensorMagnetic;
     // helpers for sensors to reduce the updating
-    int chill_pressure = 0;
-    int chill_acl = 0;
-    int chill_mag = 0;
+//    int chill_pressure = 0;
+//    int chill_acl = 0;
+//    int chill_mag = 0;
 
     // Conditions
     RadioButton rb_a_0, rb_a_1, rb_s_0, rb_s_1, rb_s_2, rb_e_0, rb_e_1, rb_e_2, rb_e_3;
     HashMap<String, String> conditions;
     long start_time;
+
+//    String debug = "idk";
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -121,15 +124,19 @@ public class MainActivity extends AppCompatActivity {
         conditions = new HashMap<>();
         start_time = System.currentTimeMillis();
 
-        // Getting Device ID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0
+        // Getting Device ID and AAID: reference https://www.youtube.com/watch?v=6tyGaqV2Gy0 and https://proandroiddev.com/how-to-generate-android-unique-id-38362794e1a8
         // Android does not include this in their documentation -- getting this info from a youtube search might help the arguments -- its super easy
         tv_AID = findViewById(R.id.tv_AID);
         // studio is telling me using "getString" to get Android ID is not recommended
         device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
-        // because it is likely this considered harmful activity, lets see if this fixes things
-//        device_AID = "my pixel";
-
         tv_AID.setText(device_AID);
+
+        // eh not worth it - pretty much serves the same function as above 
+//        tv_DID = findViewById(R.id.tv_DID);
+//        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+//        device_ID = telephonyManager.getDeviceId();
+//        tv_DID.setText(device_ID);
+
         Runnable idRunnable = this::loadTheAAID;
         Thread idThread = new Thread(idRunnable);
         idThread.start();
@@ -166,15 +173,15 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Relative Humidity", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_PRESSURE :
-                        if (chill_pressure != 0) {
-                            if (chill_pressure > CHILL_FACTOR) {
-                                chill_pressure = 0;
-                                break;
-                            }
-                            chill_pressure += 1;
-                            break;
-                        }
-                        chill_pressure += 1;
+//                        if (chill_pressure != 0) {
+//                            if (chill_pressure > CHILL_FACTOR) {
+//                                chill_pressure = 0;
+//                                break;
+//                            }
+//                            chill_pressure += 1;
+//                            break;
+//                        }
+//                        chill_pressure += 1;
                         String pressureValue = event.values[0] + " hPa";
                         tv_pressure.setText(pressureValue);
                         sensorStorage.updateData("Pressure", String.valueOf(event.values[0]));
@@ -190,29 +197,29 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Light", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
-                        if (chill_acl != 0) {
-                            if (chill_acl > CHILL_FACTOR) {
-                                chill_acl = 0;
-                                break;
-                            }
-                            chill_acl += 1;
-                            break;
-                        }
-                        chill_acl += 1;
+//                        if (chill_acl != 0) {
+//                            if (chill_acl > CHILL_FACTOR) {
+//                                chill_acl = 0;
+//                                break;
+//                            }
+//                            chill_acl += 1;
+//                            break;
+//                        }
+//                        chill_acl += 1;
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_accelerator.setText(aclValue);
                         sensorStorage.updateData("Linear Acceleration", "(" + aclValue + ")");
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
-                        if (chill_mag != 0) {
-                            if (chill_mag > CHILL_FACTOR) {
-                                chill_mag = 0;
-                                break;
-                            }
-                            chill_mag += 1;
-                            break;
-                        }
-                        chill_mag += 1;
+//                        if (chill_mag != 0) {
+//                            if (chill_mag > CHILL_FACTOR) {
+//                                chill_mag = 0;
+//                                break;
+//                            }
+//                            chill_mag += 1;
+//                            break;
+//                        }
+//                        chill_mag += 1;
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
                         tv_magnetic.setText(magneticValue);
                         sensorStorage.updateData("Magnetic Field", "(" + magneticValue + ")");
@@ -359,9 +366,9 @@ public class MainActivity extends AppCompatActivity {
         } else if (v_id == R.id.rb_s_2) {
             if (checked) {
                 if (conditions.containsKey("Settings")) {
-                    conditions.replace("Settings", "NoPrivacy");
+                    conditions.replace("Settings", "SomePrivacy");
                 } else {
-                    conditions.put("Settings", "NoPrivacy");
+                    conditions.put("Settings", "SomePrivacy");
                 }
             }
         } else if (v_id == R.id.rb_e_0) {
@@ -476,14 +483,13 @@ public class MainActivity extends AppCompatActivity {
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 updateGPS();
             } else {
-                makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
-                finish();
+//                makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
+//                finish();
+                stopLocationUpdates();
+                if (storage == null) {
+                    storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, "null", "null", "null", "null", "null");
+                }
             }
-//            } else {
-//                if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                    requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
-//                }
-//            }
         }
     }
 
@@ -495,9 +501,8 @@ public class MainActivity extends AppCompatActivity {
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     this::updateUIValue);
         } else {
-            stopLocationUpdates();
-            if (storage == null) {
-                storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, "null", "null", "null", "null", "null");
+            if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
             }
          }
     }

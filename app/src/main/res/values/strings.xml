@@ -76,4 +76,5 @@
     <string name="loadData">Load</string>
     <string name="send_the_data">Send the Data</string>
     <string name="read_the_data">Read the Data</string>
+    <string name="android_id">Android ID</string>
 </resources>

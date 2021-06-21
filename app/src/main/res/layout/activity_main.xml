@@ -175,11 +175,11 @@
     <TableRow>
         <TextView
             android:id="@+id/tv_labelAID"
-            android:text="@string/tv_labelAID2" />
+            android:text="@string/android_id" />
 
         <TextView
             android:id="@+id/tv_AID"
-            android:text="@string/tv_AID" />
+            android:text="@string/android_id" />
     </TableRow>
 
     <TableRow>
@@ -191,6 +191,12 @@
             android:id="@+id/tv_AAID"
             android:text="@string/tv_AAID" />
     </TableRow>
+
+<!--    <TableRow>-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_AID"-->
+<!--            android:text="android id" />-->
+<!--    </TableRow>-->
 
    <TableRow>
        <TextView
@@ -251,7 +257,7 @@
                android:id="@+id/rb_s_2"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="No Privacy"
+               android:text="Some Privacy"
                android:onClick="onConditionClick"/>
 
        </RadioGroup>
