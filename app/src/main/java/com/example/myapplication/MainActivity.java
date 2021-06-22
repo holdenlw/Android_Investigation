@@ -53,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     public static final int DEFAULT_UPDATE_INTERVAL = 3;
     public static final int FASTEST_UPDATE_INTERVAL = 5;
     private static final int PERMISSION_FINE_LOCATION = 99;
-    private static final int CHILL_FACTOR = 100;
+    private static final int CHILL_FACTOR = 99;
 
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
@@ -78,10 +78,10 @@ public class MainActivity extends AppCompatActivity {
     SensorManager sensorManager;
     SensorEventListener sensorEventListener;
     Sensor sensorTemp, sensorHumidity, sensorPressure, sensorProximity, sensorLight, sensorAcceleration, sensorMagnetic;
-    // helpers for sensors to reduce the updating
-//    int chill_pressure = 0;
-//    int chill_acl = 0;
-//    int chill_mag = 0;
+    // helpers for sensors to reduce the updating - only for UI
+    int chill_pressure = 0;
+    int chill_acl = 0;
+    int chill_mag = 0;
 
     // Conditions
     RadioButton rb_a_0, rb_a_1, rb_s_0, rb_s_1, rb_s_2, rb_e_0, rb_e_1, rb_e_2, rb_e_3;
@@ -173,18 +173,18 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Relative Humidity", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_PRESSURE :
-//                        if (chill_pressure != 0) {
-//                            if (chill_pressure > CHILL_FACTOR) {
-//                                chill_pressure = 0;
-//                                break;
-//                            }
-//                            chill_pressure += 1;
-//                            break;
-//                        }
-//                        chill_pressure += 1;
+                        if (chill_pressure != 0) {
+                            if (chill_pressure >= CHILL_FACTOR) {
+                                chill_pressure = 0;
+                                break;
+                            }
+                            chill_pressure += 1;
+                            break;
+                        }
+                        chill_pressure += 1;
                         String pressureValue = event.values[0] + " hPa";
-                        tv_pressure.setText(pressureValue);
                         sensorStorage.updateData("Pressure", String.valueOf(event.values[0]));
+                        tv_pressure.setText(pressureValue);
                         break;
                     case Sensor.TYPE_PROXIMITY :
                         String proximityValue =  event.values[0] + " cm";
@@ -197,32 +197,32 @@ public class MainActivity extends AppCompatActivity {
                         sensorStorage.updateData("Light", String.valueOf(event.values[0]));
                         break;
                     case Sensor.TYPE_ACCELEROMETER :
-//                        if (chill_acl != 0) {
-//                            if (chill_acl > CHILL_FACTOR) {
-//                                chill_acl = 0;
-//                                break;
-//                            }
-//                            chill_acl += 1;
-//                            break;
-//                        }
-//                        chill_acl += 1;
+                        if (chill_acl != 0) {
+                            if (chill_acl >= CHILL_FACTOR) {
+                                chill_acl = 0;
+                                break;
+                            }
+                            chill_acl += 1;
+                            break;
+                        }
+                        chill_acl += 1;
                         String aclValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
-                        tv_accelerator.setText(aclValue);
                         sensorStorage.updateData("Linear Acceleration", "(" + aclValue + ")");
+                        tv_accelerator.setText(aclValue);
                         break;
                     case Sensor.TYPE_MAGNETIC_FIELD :
-//                        if (chill_mag != 0) {
-//                            if (chill_mag > CHILL_FACTOR) {
-//                                chill_mag = 0;
-//                                break;
-//                            }
-//                            chill_mag += 1;
-//                            break;
-//                        }
-//                        chill_mag += 1;
+                        if (chill_mag != 0) {
+                            if (chill_mag >= CHILL_FACTOR) {
+                                chill_mag = 0;
+                                break;
+                            }
+                            chill_mag += 1;
+                            break;
+                        }
                         String magneticValue = "x: " + event.values[0] + ", y: " + event.values[1] + ", z: " + event.values[2];
-                        tv_magnetic.setText(magneticValue);
                         sensorStorage.updateData("Magnetic Field", "(" + magneticValue + ")");
+                        chill_mag += 1;
+                        tv_magnetic.setText(magneticValue);
                         break;
                     default:
                         break;
@@ -235,11 +235,11 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(sensorEventListener, sensorAcceleration, SensorManager.SENSOR_DELAY_NORMAL);
         //sensorManager.registerListener(sensorEventListener, sensorHumidity, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener, sensorLight, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(sensorEventListener, sensorMagnetic, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(sensorEventListener, sensorPressure, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(sensorEventListener, sensorProximity, SensorManager.SENSOR_DELAY_NORMAL);
         //sensorManager.registerListener(sensorEventListener, sensorTemp, SensorManager.SENSOR_DELAY_FASTEST);
 
@@ -465,11 +465,9 @@ public class MainActivity extends AppCompatActivity {
             //                                          int[] grantResults)
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
-            stopLocationUpdates();
             return;
-            // yeah idk about what is going on up here
         }
-        /* Might need to change this but it works for now */
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
         fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
         updateGPS();
     }
@@ -510,7 +508,7 @@ public class MainActivity extends AppCompatActivity {
     private void updateUIValue(@NotNull Location location) {
         String speed;
         String alt;
-        String addy;
+        String address;
         String confidence = String.valueOf(location.getAccuracy());
 
         tv_lat.setText(String.valueOf(location.getLatitude()));
@@ -539,19 +537,19 @@ public class MainActivity extends AppCompatActivity {
 
         try {
             List<Address> addresses = geocoder.getFromLocation(location.getLatitude(), location.getLongitude(), 1);
-            addy = addresses.get(0).getAddressLine(0);
-            tv_address.setText(addy);
+            address = addresses.get(0).getAddressLine(0);
+            tv_address.setText(address);
 
         } catch (Exception e) {
             tv_address.setText(R.string.tv_address);
-            addy = "No address";
+            address = "No address";
         }
 
         String cords = "(" + location.getLatitude() + ", " + location.getLongitude() + ")";
 
         if (storage == null) {
-            storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, cords, alt, speed, addy, confidence);
-        } else storage.updateData(cords, alt, speed, addy, confidence);
+            storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, cords, alt, speed, address, confidence);
+        } else storage.updateData(cords, alt, speed, address, confidence);
     }
 
 }
