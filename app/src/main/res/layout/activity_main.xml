@@ -257,7 +257,7 @@
                android:id="@+id/rb_s_2"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="Some Privacy"
+               android:text="No GLA"
                android:onClick="onConditionClick"/>
 
        </RadioGroup>
@@ -323,7 +323,6 @@
             android:id="@+id/tv_data_s"
             android:text=""
             />
-
     </TableLayout>
 
 </ScrollView>

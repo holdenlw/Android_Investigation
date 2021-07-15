@@ -3,6 +3,7 @@ package com.example.myapplication;
 import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -13,6 +14,7 @@ import android.location.Geocoder;
 import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Looper;
 import android.provider.Settings;
 import android.telephony.TelephonyManager;
 import android.view.View;
@@ -30,11 +32,18 @@ import androidx.core.app.ActivityCompat;
 import com.google.android.gms.ads.identifier.AdvertisingIdClient;
 import com.google.android.gms.common.GooglePlayServicesNotAvailableException;
 import com.google.android.gms.common.GooglePlayServicesRepairableException;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -49,9 +58,8 @@ import static android.widget.Toast.makeText;
 
 
 public class MainActivity extends AppCompatActivity {
-    // Global constants
-    public static final int DEFAULT_UPDATE_INTERVAL = 3;
-    public static final int FASTEST_UPDATE_INTERVAL = 5;
+    public static final int DEFAULT_UPDATE_INTERVAL = 5000;
+    public static final int FASTEST_UPDATE_INTERVAL = 3000;
     private static final int PERMISSION_FINE_LOCATION = 99;
     private static final int CHILL_FACTOR = 99;
 
@@ -89,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
     long start_time;
 
 //    String debug = "idk";
+    //int counter = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     @Override
@@ -245,22 +254,26 @@ public class MainActivity extends AppCompatActivity {
 
         // set properties of request
         locationRequest = LocationRequest.create();
-        // We can keep this simple -- more likely to get errors if running too fast
-        // how often default location request occur; Highest priority setting -- BALANCED recommended
-        //
-        // change from high priority to balanced ==> high prority set when fine location acess gratned
-        locationRequest.setInterval(1000 * DEFAULT_UPDATE_INTERVAL).setFastestInterval(1000 * FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
+        locationRequest.setInterval(DEFAULT_UPDATE_INTERVAL).setFastestInterval(FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
+                if (locationResult.getLastLocation() == null) {
+                    makeText(getApplicationContext(), "We got a null location result", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                // There is not a difference between these two methods
+//                for (Location location : locationResult.getLocations()) {
+//                    //makeText(getApplicationContext(), "location: " + location + " vs. " + locationResult.getLastLocation(), Toast.LENGTH_LONG * 3).show();
+//                    updateUIValue(location)
+//                }
                 updateUIValue(locationResult.getLastLocation());
             }
         };
-        /* Note
-        The only purpose this switch servers is automatically turning on location tracking.
-        It might be best practice to remove or replace this way of doing it, but not worth it for now
+        /*
+        Turns on Location Updates ==> can't do automatically for some reason but that is fine for this research
          */
         SwitchCompat locationSwitch = (SwitchCompat) findViewById(R.id.sw_locationsupdates);
         locationSwitch.setOnClickListener(v -> {
@@ -421,13 +434,17 @@ public class MainActivity extends AppCompatActivity {
         AdvertisingIdClient.Info idInfo;
         try {
             idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
-            if(idInfo.isLimitAdTrackingEnabled()) {
-                account_AAID = "Privacy Enabled";
-                tv_AAID.setText("Limited tracking enabled");
+            if (idInfo.isLimitAdTrackingEnabled()) {
+//                makeText(this, "What is the point of this setting", Toast.LENGTH_LONG * 10).show();
+                //account_AAID = "Privacy Enabled";
+                //tv_AAID.setText("Limited tracking enabled");
+                account_AAID = idInfo.getId();
+                tv_AAID.setText("Limited tracking doesn't work: " + account_AAID);
             } else {
                 account_AAID = idInfo.getId();
                 tv_AAID.setText(account_AAID);
             }
+
         } catch (IOException e) {
             String exception_explained = "IOException: " + e;
             tv_AAID.setText(exception_explained);
@@ -454,9 +471,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startLocationUpdates() {
-        /* Probably don't want to implement this error handling because we want to see the difference between
-        the conditions where permissions are on and off
-        */
+
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -467,8 +482,20 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
+        // apparently I am avoiding the step where I check the settings of the device, lets see what happens
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
+
+        SettingsClient client = LocationServices.getSettingsClient(this);
+        Task<LocationSettingsResponse> task = client.checkLocationSettings(builder.build())
+                .addOnSuccessListener(this, locationSettingsResponse -> {
+                    makeText(this, "Settings are Good", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(this, e -> {
+                    makeText(this, "I guess resolution is NOT required...", Toast.LENGTH_LONG * 5).show();
+                }
+                );
+        // I found a big bug
+        fusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, Looper.getMainLooper());
         updateGPS();
     }
 
@@ -481,8 +508,6 @@ public class MainActivity extends AppCompatActivity {
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
                 updateGPS();
             } else {
-//                makeText(this, "need permission to be granted to work", Toast.LENGTH_SHORT).show();
-//                finish();
                 stopLocationUpdates();
                 if (storage == null) {
                     storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, "null", "null", "null", "null", "null");
@@ -496,8 +521,10 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            makeText(getApplicationContext(), "getting last location", Toast.LENGTH_SHORT).show();
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     this::updateUIValue);
+
         } else {
             if (VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     requestPermissions(new String[] {Manifest.permission.ACCESS_FINE_LOCATION}, PERMISSION_FINE_LOCATION);
