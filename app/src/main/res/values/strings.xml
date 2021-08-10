@@ -77,4 +77,9 @@
     <string name="send_the_data">Send the Data</string>
     <string name="read_the_data">Read the Data</string>
     <string name="android_id">Android ID</string>
+    <string name="gps">GPS</string>
+    <string name="bs">BS</string>
+    <string name="h_accuracy">H Accuracy</string>
+    <string name="v_accuracy">V Accuracy</string>
+    <string name="_0_0">0.0</string>
 </resources>

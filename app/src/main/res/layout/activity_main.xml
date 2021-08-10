@@ -57,11 +57,20 @@
     <TableRow>
         <TextView
             android:id="@+id/tv_labelaccuracy"
-            android:text="@string/accuracy" />
+            android:text="@string/h_accuracy" />
 
         <TextView
             android:id="@+id/tv_accuracy"
             android:text="@string/d_0_00" />
+    </TableRow>
+
+    <TableRow>
+        <TextView
+            android:id="@+id/tv_labelvaccuracy"
+            android:text="@string/v_accuracy" />
+        <TextView
+            android:id="@+id/tv_vaccuracy"
+            android:text="@string/_0_0" />
     </TableRow>
 
     <TableRow>
@@ -73,6 +82,15 @@
             android:id="@+id/tv_speed"
             android:text="@string/e_0_00" />
     </TableRow>
+
+<!--    <TableRow>-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_labelprovider"-->
+<!--            android:text="Provider" />-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_provider"-->
+<!--            android:text="" />-->
+<!--    </TableRow>-->
 
     <TableRow>
         <TextView
@@ -92,15 +110,15 @@
             android:layout_span="2" />
     </TableRow>
 
-    <TableRow>
-        <TextView
-            android:id="@+id/tv_labeltemp"
-            android:text="@string/temp" />
+<!--    <TableRow>-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_labeltemp"-->
+<!--            android:text="@string/temp" />-->
 
-        <TextView
-            android:id="@+id/tv_temp"
-            android:text="@string/f_0_00" />
-    </TableRow>
+<!--        <TextView-->
+<!--            android:id="@+id/tv_temp"-->
+<!--            android:text="@string/f_0_00" />-->
+<!--    </TableRow>-->
 
     <TableRow>
         <TextView
@@ -122,15 +140,15 @@
             android:text="@string/h_0_00" />
     </TableRow>
 
-    <TableRow>
-        <TextView
-            android:id="@+id/tv_lablehumidty"
-            android:text="@string/humidity" />
+<!--    <TableRow>-->
+<!--        <TextView-->
+<!--            android:id="@+id/tv_lablehumidty"-->
+<!--            android:text="@string/humidity" />-->
 
-        <TextView
-            android:id="@+id/tv_humidity"
-            android:text="@string/i_0_00" />
-    </TableRow>
+<!--        <TextView-->
+<!--            android:id="@+id/tv_humidity"-->
+<!--            android:text="@string/i_0_00" />-->
+<!--    </TableRow>-->
 
     <TableRow>
         <TextView
@@ -251,13 +269,13 @@
                android:id="@+id/rb_s_1"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="Privacy"
+               android:text="@string/bs"
                android:onClick="onConditionClick"/>
            <RadioButton
                android:id="@+id/rb_s_2"
                android:layout_width="wrap_content"
                android:layout_height="wrap_content"
-               android:text="No GLA"
+               android:text="@string/gps"
                android:onClick="onConditionClick"/>
 
        </RadioGroup>
@@ -316,6 +334,11 @@
     </TableRow>
 
         <TextView
+            android:id="@+id/tv_catch"
+            android:text=""
+            />
+
+        <TextView
             android:id="@+id/tv_data"
             android:text=""
             />
@@ -323,6 +346,7 @@
             android:id="@+id/tv_data_s"
             android:text=""
             />
+
     </TableLayout>
 
 </ScrollView>

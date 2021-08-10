@@ -60,12 +60,15 @@ import static android.widget.Toast.makeText;
 public class MainActivity extends AppCompatActivity {
     public static final int DEFAULT_UPDATE_INTERVAL = 5000;
     public static final int FASTEST_UPDATE_INTERVAL = 3000;
+    //public static final int DEFAULT_UPDATE_INTERVAL = 15000;
+    //public static final int FASTEST_UPDATE_INTERVAL = 10000;
     private static final int PERMISSION_FINE_LOCATION = 99;
-    private static final int CHILL_FACTOR = 99;
+    private static int CHILL_FACTOR = 99;
 
     TextView tv_lat, tv_lon, tv_altitude, tv_accuracy, tv_speed,
             tv_address, tv_temp, tv_light, tv_pressure, tv_humidity,
-            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID, tv_data, tv_data_s;
+            tv_proximity, tv_accelerator, tv_magnetic, tv_AID, tv_AAID,
+            tv_data, tv_data_s, tv_catch, tv_vaccuracy;
 
     String device_AID, account_AAID;
 
@@ -111,14 +114,16 @@ public class MainActivity extends AppCompatActivity {
         tv_accuracy = findViewById(R.id.tv_accuracy);
         tv_speed = findViewById(R.id.tv_speed);
         tv_address = findViewById(R.id.tv_address);
-        tv_temp = findViewById(R.id.tv_temp);
+        //tv_temp = findViewById(R.id.tv_temp);
         tv_light = findViewById(R.id.tv_light);
         tv_pressure = findViewById(R.id.tv_pressure);
-        tv_humidity = findViewById(R.id.tv_humidity);
+        //tv_humidity = findViewById(R.id.tv_humidity);
         tv_proximity = findViewById(R.id.tv_proximity);
         tv_accelerator = findViewById(R.id.tv_accelerator);
         tv_magnetic = findViewById(R.id.tv_magnetic);
         tv_AAID = findViewById(R.id.tv_AAID);
+        //tv_provider = findViewById(R.id.tv_provider);
+        tv_vaccuracy = findViewById(R.id.tv_vaccuracy);
 
         rb_a_0 = findViewById(R.id.rb_a_0);
         rb_a_1 = findViewById(R.id.rb_a_1);
@@ -140,11 +145,8 @@ public class MainActivity extends AppCompatActivity {
         device_AID = Settings.Secure.getString(this.getContentResolver(), Settings.Secure.ANDROID_ID);
         tv_AID.setText(device_AID);
 
-        // eh not worth it - pretty much serves the same function as above 
-//        tv_DID = findViewById(R.id.tv_DID);
-//        TelephonyManager telephonyManager = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
-//        device_ID = telephonyManager.getDeviceId();
-//        tv_DID.setText(device_ID);
+        // Show that Limited Tracking does not work
+        tv_catch = findViewById(R.id.tv_catch);
 
         Runnable idRunnable = this::loadTheAAID;
         Thread idThread = new Thread(idRunnable);
@@ -257,6 +259,7 @@ public class MainActivity extends AppCompatActivity {
         locationRequest.setInterval(DEFAULT_UPDATE_INTERVAL).setFastestInterval(FASTEST_UPDATE_INTERVAL).setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
         locationCallback = new LocationCallback() {
+            @RequiresApi(api = Build.VERSION_CODES.O)
             @Override
             public void onLocationResult(@NonNull LocationResult locationResult) {
                 super.onLocationResult(locationResult);
@@ -264,11 +267,7 @@ public class MainActivity extends AppCompatActivity {
                     makeText(getApplicationContext(), "We got a null location result", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                // There is not a difference between these two methods
-//                for (Location location : locationResult.getLocations()) {
-//                    //makeText(getApplicationContext(), "location: " + location + " vs. " + locationResult.getLastLocation(), Toast.LENGTH_LONG * 3).show();
-//                    updateUIValue(location)
-//                }
+
                 updateUIValue(locationResult.getLastLocation());
             }
         };
@@ -435,11 +434,9 @@ public class MainActivity extends AppCompatActivity {
         try {
             idInfo = AdvertisingIdClient.getAdvertisingIdInfo(getApplicationContext());
             if (idInfo.isLimitAdTrackingEnabled()) {
-//                makeText(this, "What is the point of this setting", Toast.LENGTH_LONG * 10).show();
-                //account_AAID = "Privacy Enabled";
-                //tv_AAID.setText("Limited tracking enabled");
                 account_AAID = idInfo.getId();
-                tv_AAID.setText("Limited tracking doesn't work: " + account_AAID);
+                tv_AAID.setText(account_AAID);
+                tv_catch.setText("Limited Tracking Does Not Work");
             } else {
                 account_AAID = idInfo.getId();
                 tv_AAID.setText(account_AAID);
@@ -461,17 +458,19 @@ public class MainActivity extends AppCompatActivity {
 
     // Turning off sensors and location tracking -- no longer needed but leaving it here
     private void stopLocationUpdates() {
+        CHILL_FACTOR = 0;
+
         tv_lat.setText(R.string.tv_lat);
         tv_lon.setText(R.string.tv_lon);
         tv_accuracy.setText(R.string.tv_accuracy);
         tv_address.setText("Off");
         tv_speed.setText("Off");
         tv_altitude.setText("Off");
+        tv_vaccuracy.setText("Off");
         fusedLocationProviderClient.removeLocationUpdates(locationCallback);
     }
 
     private void startLocationUpdates() {
-
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -482,6 +481,7 @@ public class MainActivity extends AppCompatActivity {
             // for ActivityCompat#requestPermissions for more details.
             return;
         }
+
         // apparently I am avoiding the step where I check the settings of the device, lets see what happens
         LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(locationRequest);
 
@@ -491,7 +491,9 @@ public class MainActivity extends AppCompatActivity {
                     makeText(this, "Settings are Good", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(this, e -> {
-                    makeText(this, "I guess resolution is NOT required...", Toast.LENGTH_LONG * 5).show();
+                    if (e instanceof ResolvableApiException) {
+                        makeText(this, "The settings need to be changed...", Toast.LENGTH_LONG * 5).show();
+                    }
                 }
                 );
         // I found a big bug
@@ -506,9 +508,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == PERMISSION_FINE_LOCATION) {
             if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+                //locationRequest.setPriority(LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY);
                 updateGPS();
             } else {
                 stopLocationUpdates();
+                CHILL_FACTOR = 0;
                 if (storage == null) {
                     storage = StoreInfo.getInstance("device " + device_AID + " and account " + account_AAID, "null", "null", "null", "null", "null");
                 }
@@ -521,7 +525,7 @@ public class MainActivity extends AppCompatActivity {
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
 
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            makeText(getApplicationContext(), "getting last location", Toast.LENGTH_SHORT).show();
+            //makeText(getApplicationContext(), "getting last location", Toast.LENGTH_SHORT).show();
             fusedLocationProviderClient.getLastLocation().addOnSuccessListener(this,
                     this::updateUIValue);
 
@@ -532,15 +536,25 @@ public class MainActivity extends AppCompatActivity {
          }
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     private void updateUIValue(@NotNull Location location) {
         String speed;
         String alt;
         String address;
         String confidence = String.valueOf(location.getAccuracy());
 
+        //String provider = location.getProvider();
+        //tv_provider.setText(provider);
+
         tv_lat.setText(String.valueOf(location.getLatitude()));
         tv_lon.setText(String.valueOf(location.getLongitude()));
         tv_accuracy.setText(confidence);
+
+        if (location.hasVerticalAccuracy()) {
+            tv_vaccuracy.setText(String.valueOf(location.getVerticalAccuracyMeters()));
+        } else {
+            tv_vaccuracy.setText("no vertical accuracy");
+        }
 
         // not every phone has the sensors of interest
         if (location.hasAltitude()) {
